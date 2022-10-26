@@ -1,0 +1,1 @@
+export const CATEGORIES = ['All', 'Apartment', 'Studio', 'Duplex', 'category1', 'category2'];
