@@ -1,69 +1,87 @@
 import React from 'react'
-import { SafeAreaView, StatusBar, Text, View, StyleSheet, ScrollView, Dimensions, Image, Pressable, TouchableOpacity, FlatList } from 'react-native'
+import { SafeAreaView, StatusBar, Text, View, StyleSheet, ScrollView, Dimensions, Image, TextInput } from 'react-native'
 import Navigation from '../../../reusables/navigation'
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import GIVE_MEASUREMENT from './../../../assets/images/icons/measuring.png';
-import FABRIC_COLLECTION from './../../../assets/images/icons/layers.png';
-import ALTER from './../../../assets/images/icons/repair.png';
-import CUSTOMIZE_SHIRT from './../../../assets/images/icons/shirt.png';
-import TAILOR from './../../../assets/images/icons/suit.png';
-import HorizontalCardView from '../../../reusables/horizontalCardView';
-import { FABRICS } from './constant';
-import VerticalCardView from '../../../reusables/verticalCardView';
 
 function HomePage({ navigation }) {
   return (
     <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, backgroundColor: '#f7f7f7' }}>
       <Navigation pageTitle="choose category" />
-      <ScrollView style={{ flex: 1, paddingTop: 10 }}>
-        <View style={styles.cards}>
-          <View style={[styles.card, styles.boxWithShadow, { marginLeft: 10 }]}>
-            <Image source={GIVE_MEASUREMENT} style={styles.icon} />
-            <Text>give measurement</Text>
+      <ScrollView style={{ flex: 1 }}>
+        <View style={styles.banner}>
+          <Text style={styles.bannerTitle}>Welcome to Tailor Shop</Text>
+          <View style={styles.hr} />
+          <Text style={styles.bannerDesc}>One stop shop for your tailoring needs</Text>
+          <View style={[styles.inputContainer, styles.boxWithShadow, { marginBottom: 15 }]}>
+            <TextInput
+              style={styles.input}
+              placeholder=""
+              underlineColorAndroid="transparent"
+            />
+            <Ionicons style={styles.inputInsideIcon} name="search" size={18} />
           </View>
-          <View style={[styles.card, styles.boxWithShadow]}>
-            <Image source={FABRIC_COLLECTION} style={styles.icon} />
-            <Text>give measurement</Text>
+        </View>
+
+        <View>
+          <Text style={styles.sectionTitle}>popular near you</Text>
+          <View style={styles.cards}>
+            <View style={[styles.card, styles.boxWithShadow]}>
+              <Image source={{ uri: 'https://burst.shopifycdn.com/photos/stylish-man-in-bow-tie.jpg' }} style={styles.cardImage} />
+              <View style={styles.cardDetails}>
+                <View style={[styles.iconView, styles.boxWithShadow]}>
+                  <Ionicons name="male-outline" size={22} color='#e8875b' />
+                </View>
+                <Text style={{ textTransform: 'uppercase', fontWeight: '500', textAlign: 'center' }}>men</Text>
+                <Text style={{ fontSize: 12, color: '#7e8082', textAlign: 'center' }}>Stylish and Handsome Look</Text>
+              </View>
+            </View>
+            <View style={[styles.card, styles.boxWithShadow, { marginRight: 0 }]}>
+              <Image source={{ uri: 'https://cdn.thetealmango.com/wp-content/uploads/2022/02/Yael-Shelbia.jpg' }} style={styles.cardImage} />
+              <View style={styles.cardDetails}>
+                <View style={[styles.iconView, styles.boxWithShadow]}>
+                  <Ionicons name="female-outline" size={22} color='#e8875b' />
+                </View>
+                <Text style={{ textTransform: 'uppercase', fontWeight: '500', textAlign: 'center' }}>women</Text>
+                <Text style={{ fontSize: 12, color: '#7e8082', textAlign: 'center' }}>Coming Soon</Text>
+              </View>
+            </View>
           </View>
-          <View style={[styles.card, styles.boxWithShadow, { marginRight: 0 }]}>
-            <Image source={ALTER} style={styles.icon} />
-            <Text>give measurement</Text>
-          </View>
-          <View style={[styles.card, styles.boxWithShadow, { marginLeft: 10 }]}>
-            <Image source={CUSTOMIZE_SHIRT} style={styles.icon} />
-            <Text>give measurement</Text>
-          </View>
-          <View style={[styles.card, styles.boxWithShadow]}>
-            <Image source={TAILOR} style={styles.icon} />
-            <Text>give measurement</Text>
+        </View>
+
+        <View style={{ marginTop: 15 }}>
+          <Text style={styles.sectionTitle}>get quote</Text>
+          <View style={{ paddingHorizontal: 20 }}>
+            <View style={{ backgroundColor: '#e8875b', padding: 15, borderRadius: 10, flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ width: 60, height: 60, borderRadius: 10, overflow: 'hidden', marginRight: 15 }}>
+                <Image style={{ flex: 1 }} source={{ uri: 'https://t3.ftcdn.net/jpg/00/31/83/24/360_F_31832414_dFlC6euYXfpLh0psFr34RXSCf2qxIbCm.jpg' }} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', textTransform: 'capitalize' }}>assured best quote</Text>
+                <Text style={{ fontSize: 12, color: '#fff' }}>Reference site about Lorem Ipsum, giving information on its origins</Text>
+              </View>
+            </View>
           </View>
         </View>
 
         <View style={{ marginVertical: 15 }}>
-          <Text style={styles.sectionTitle}>Our Fabric Collection</Text>
-          <FlatList
-            data={FABRICS}
-            renderItem={({ item, index }) => (
-              <Pressable onPress={() => setCategory(item)} key={index}>
-                <HorizontalCardView item={item} marginRight={index === FABRICS.length - 1 ? 10 : 0} />
-              </Pressable>
-            )}
-            scrollEnabled={true}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-
-        <View style={{ marginBottom: 15 }}>
-          <Text style={styles.sectionTitle}>Best selling Products</Text>
-          <View style={{ paddingHorizontal: 10, flexDirection: 'row', flexWrap: 'wrap' }}>
+          <Text style={styles.sectionTitle}>fashion blog</Text>
+          <View style={{ paddingHorizontal: 20 }}>
             {
-              [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
-                  <VerticalCardView key={index} item={item} marginRight={index%2 === 0 ? 10 : 0} />
+              [0, 1, 2, 3, 4, 5].map((a, index) => (
+                <View style={[styles.boxWithShadow, styles.blog]} key={index}>
+                  <View style={{ width: 70, height: 70, borderRadius: 50, overflow: 'hidden', marginRight: 15 }}>
+                    <Image style={{ flex: 1 }} source={{ uri: 'https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg' }} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontWeight: '500', fontSize: 16 }}>At a Scorching Copenhagen Fashion Week</Text>
+                    <Text style={{ fontSize: 12, color: '#7e8082', marginTop: 5 }}>The Dane were a bit out of sorts last week. Temperature rose into the 90s</Text>
+                  </View>
+                </View>
               ))
             }
           </View>
         </View>
+
       </ScrollView>
     </SafeAreaView>
   )
@@ -78,38 +96,59 @@ const styles = StyleSheet.create({
     paddingVertical: 20
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    paddingHorizontal: 10,
+    fontSize: 18,
+    fontWeight: '600',
+    paddingHorizontal: 20,
     marginBottom: 15,
     textTransform: 'capitalize'
   },
   cards: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    paddingHorizontal: 20
   },
   card: {
     flexDirection: 'column',
     alignItems: 'center',
-    width: ((Dimensions.get('screen').width) - 40) / 3,
+    width: ((Dimensions.get('screen').width) - 60) / 2,
     borderRadius: 10,
-    padding: 20,
     marginBottom: 10,
-    marginRight: 10,
+    marginRight: 20,
     justifyContent: 'space-between',
     backgroundColor: '#ffffff',
-    borderRadius: 6
+    borderRadius: 6,
+    overflow: 'hidden'
+  },
+  cardDetails: {
+    padding: 10,
+    paddingTop: 30,
+    position: 'relative',
+    width: '100%'
+  },
+  iconView: {
+    position: 'absolute',
+    zIndex: 1,
+    backgroundColor: '#fff',
+    width: 40,
+    height: 40,
+    top: -20,
+    left: '42%',
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
   boxWithShadow: {
     shadowColor: '#666',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 5
+    shadowRadius: 5,
+    elevation: 15
   },
-  icon: {
-    height: 50,
-    width: 50,
+  cardImage: {
+    height: 120,
+    flex: 1,
+    width: '100%',
     color: '#75bbb9'
   },
   horizontalAlign: {
@@ -123,6 +162,64 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     color: '#fff',
     width: Dimensions.get('screen').width - 200
+  },
+  banner: {
+    backgroundColor: '#86bcbf',
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    position: 'relative',
+    paddingBottom: 50,
+    marginBottom: 30
+  },
+  bannerTitle: {
+    fontSize: 30,
+    fontWeight: '600',
+    color: '#fff',
+    maxWidth: 200,
+    marginBottom: 10,
+    letterSpacing: 1,
+  },
+  bannerDesc: {
+    fontSize: 18,
+    color: '#fff',
+    marginTop: 10
+  },
+  hr: {
+    height: 2,
+    width: 100,
+    backgroundColor: '#fff'
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: -30,
+    left: 20,
+    width: Dimensions.get('screen').width - 40
+  },
+  inputInsideIcon: {
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    backgroundColor: '#e8865b',
+    color: '#fff'
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    color: '#424242',
+  },
+  blog: { 
+    backgroundColor: '#fff', 
+    paddingHorizontal: 15, 
+    paddingVertical: 10, 
+    borderRadius: 10, 
+    flexDirection: 'row', 
+    marginBottom: 10 
   }
 })
 

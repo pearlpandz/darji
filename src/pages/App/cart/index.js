@@ -1,7 +1,5 @@
 import React from 'react'
-import { TouchableOpacity, View, ScrollView, Text, SafeAreaView, StatusBar } from 'react-native';
-import { PROPERTIES } from '../../../constants/property';
-import HorizontalCardView from '../../../reusables/horizontalCardView';
+import { View, ScrollView, Text, SafeAreaView, StatusBar } from 'react-native';
 
 function CartPage({ navigation }) {
     return (

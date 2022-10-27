@@ -120,7 +120,7 @@ const TabStackScreen = () => (
           <Ionicons name={iconName} size={18} color={color} />
         );
       },
-      tabBarActiveTintColor: '#049fa6',
+      tabBarActiveTintColor: '#e8875b',
       tabBarInactiveTintColor: 'gray',
       tabBarLabelStyle: { fontSize: 12 },
       tabBarStyle: { height: 60, paddingBottom: 10, paddingTop: 5 },
