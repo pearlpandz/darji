@@ -7,89 +7,82 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const slides = [
   {
     key: 1,
-    title: 'buy a property',
-    text: 'the right place to find your dream home',
-    image: require('./../../assets/images/buy.png'),
-    backgroundColor: '#fff',
+    title: 'Customize Your Cloths',
+    text: 'we provide a feature that allows you to customise and order a shirt of your own choice',
+    image: require('./../../assets/images/men.png'),
+    backgroundColor: '#B9B0A2',
   },
   {
     key: 2,
-    title: 'rent a property',
-    text: 'the right place to find the idel lessee',
-    image: require('./../../assets/images/rent.png'),
-    backgroundColor: '#fff',
+    title: 'Alter Your Cloths',
+    text: 'we have introduced the ability to alter your clothes yourself to make changes to past orders',
+    image: require('./../../assets/images/women.png'),
+    backgroundColor: '#D97D54',
   },
   {
     key: 3,
-    title: 'list a property',
-    text: 'the place where you can sell your property with the best price',
-    image: require('./../../assets/images/list.png'),
-    backgroundColor: '#fff',
-  },
-  {
-    key: 4,
-    title: 'commercial list',
-    text: 'your place to choose the highest investment return unit from the commercial list',
-    image: require('./../../assets/images/commercial.png'),
-    backgroundColor: '#fff',
-  },
+    title: 'Get Measured via AR',
+    text: 'use the latest technology of AR you can now take measurement of your body easily with a perfect fit',
+    image: require('./../../assets/images/men.png'),
+    backgroundColor: '#87BCBF',
+  }
 ];
 
 const styles = StyleSheet.create({
   slideContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-    paddingBottom: 200,
+  },
+  slide: {
+    paddingHorizontal: 50,
   },
   title: {
-    fontSize: 18,
+    fontSize: 25,
     textAlign: 'center',
-    color: '#000',
-    fontWeight: 'bold',
-    textTransform: 'capitalize',
+    color: '#fff',
+    fontWeight: '500',
     paddingBottom: 7,
+    marginBottom: 20
   },
   imgContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     overflow: 'hidden',
-    paddingTop: 100,
+    height: 300,
+    marginBottom: 30,
+    borderRadius: 20
   },
   image: {
     flex: 1,
-    resizeMode: 'contain',
-    width: Dimensions.get('window').width - 40,
+    resizeMode: 'cover',
+    width: Dimensions.get('window').width - 100,
   },
   text: {
-    fontSize: 16,
-    color: '#404040',
+    fontSize: 18,
+    color: '#fff',
     paddingBottom: 15,
     textTransform: 'capitalize',
     textAlign: 'center',
+    lineHeight: 26
   },
   skipBtn: {
     fontSize: 14,
-    color: '#717172',
+    color: '#fff',
     textTransform: 'uppercase',
     fontWeight: '400',
   },
   nextBtn: {
     fontSize: 14,
-    color: '#105091',
+    color: '#fff',
     textTransform: 'uppercase',
     fontWeight: '500',
   },
   dotStyle: {
     height: 7,
     width: 7,
-    backgroundColor: '#ecebeb',
+    backgroundColor: '#0000004D',
   },
   activeDotStyle: {
-    backgroundColor: '#a0c3e4',
-    height: 7,
-    width: 35,
+    backgroundColor: '#fff',
   },
 });
 
@@ -106,10 +99,10 @@ function Welcome({ navigation }) {
           { backgroundColor: item.backgroundColor },
         ]}>
         <View style={[styles.slide]}>
+          <Text style={styles.title}>{item.title}</Text>
           <View style={styles.imgContainer}>
             <Image source={item.image} style={styles.image} />
           </View>
-          <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.text}>{item.text}</Text>
         </View>
       </View>

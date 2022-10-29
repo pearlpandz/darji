@@ -23,15 +23,16 @@ const styles = StyleSheet.create({
         color: '#fff'
     },
     primaryoutline: {
-        borderColor: '#2b3a7c',
+        borderColor: '#e8875b',
         borderWidth: 1,
-        paddingVertical: 8,
-        paddingHorizontal: 25,
-        borderRadius: 6
+        padding: 12,
+        borderRadius: 10
     },
     primaryoutlineLabel: {
-        color: '#2b3a7c',
-        fontWeight: 'bold'
+        color: '#e8875b',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        textAlign: 'center',
     },
     secondary: {
 

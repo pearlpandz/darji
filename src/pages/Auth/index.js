@@ -8,7 +8,7 @@ import {
   Image} from 'react-native';
 import Navigation from '../../reusables/navigation';
 import TabView from './tab';
-import Background from './../../assets/images/background.jpg'
+import Background from './../../assets/images/background.png'
 import Logo from './../../assets/images/logo.jpg'
 
 
@@ -17,7 +17,7 @@ const AuthenticationPage = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, backgroundColor: '#fff' }}>
       {/* <ScrollView stickyHeaderIndices={[1]} showsVerticalScrollIndicator={false}> */}
           <View style={styles.headerSection}>
-            <Image style={styles.logo} source={Logo} />
+            {/* <Image style={styles.logo} source={Logo} /> */}
             <Image source={Background} />
           </View>
           <View style={{ flex: 1 }}>

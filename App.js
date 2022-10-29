@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -24,6 +23,8 @@ import HomePage from './src/pages/App/home';
 import CartPage from './src/pages/App/cart';
 import BlogPage from './src/pages/App/blogs';
 import AccountPage from './src/pages/App/settings';
+import SelectDesignOption from './src/pages/App/home/selectDesignOption';
+import SelectDressToDesign from './src/pages/App/home/selectDressToDesign';
 
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
@@ -239,6 +240,24 @@ const HomeStack = createNativeStackNavigator();
 const HomeStackScreen = () => (
   <HomeStack.Navigator initialRouteName="home" screenOptions={{ headerShown: false }}>
     <HomeStack.Screen name="home" component={HomePage} />
+    <HomeStack.Screen name="selectdesign" component={SelectDesignOption} options={({ route }) => ({ 
+      title: route.params.title,
+      headerShown: true, 
+      headerTitleStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
+    })}
+    />
+    <HomeStack.Screen name="selectdress" component={SelectDressToDesign} options={({ route }) => ({ 
+      title: route.params.title, 
+      headerShown: true, 
+      headerTitleStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
+    })}
+    />
   </HomeStack.Navigator>
 );
 
