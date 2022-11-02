@@ -3,7 +3,7 @@ import { SafeAreaView, StatusBar, Text, View, StyleSheet, ScrollView, Dimensions
 import Navigation from '../../../reusables/navigation'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MEN_IMAGE from './../../../assets/images/men.png';
-import WOMEN_IMAGE from './../../../assets/images/women.png';
+import WOMEN_IMAGE from './../../../assets/images/women.jpg';
 import AVATAR from './../../../assets/images/avatar.png';
 import GET_A_QUOTE from './../../../assets/images/getquote.png';
 

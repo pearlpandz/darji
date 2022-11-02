@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
-import { ScrollView, StyleSheet, Text, View, Image, FlatList, Pressable, Dimensions } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, StyleSheet, Text, View, Image, FlatList, Pressable, Dimensions, TouchableOpacity } from 'react-native'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from '../../../reusables/button'
 import BottomBG from './../../../assets/images/bottom-bg-2.png';
 import Icon4 from './../../../assets/icons/icon-4.png';
 import Icon5 from './../../../assets/icons/icon-5.png';
+import { useNavigation } from '@react-navigation/native';
 
 function UploadReference() {
 
+    const navigation = useNavigation();
     const [imageList, setImageList] = useState([]);
 
     const handleFileUpload = () => {
@@ -75,10 +76,14 @@ function UploadReference() {
                         <View style={styles.desginView}>
                             <View style={{ flexDirection: 'row' }}>
                                 <View style={styles.iconContainer}>
-                                    <Image source={Icon4} style={{flex: 1}} resizeMode="contain" />
+                                    <Image source={Icon4} style={{ flex: 1 }} resizeMode="contain" />
                                 </View>
                                 <View style={{ width: Dimensions.get('screen').width - 180 }}>
-                                    <Text style={styles.link}>Submit Measurement Online Now</Text>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Common', {
+                                        screen: 'measurement'
+                                    })}>
+                                        <Text style={styles.link}>Submit Measurement Online Now</Text>
+                                    </TouchableOpacity>
                                     <TouchableOpacity style={styles.btnView}>
                                         <Text style={styles.btnLabel}>learn how to measure yourself</Text>
                                     </TouchableOpacity>
@@ -91,10 +96,14 @@ function UploadReference() {
                         <View style={[styles.desginView]}>
                             <View style={{ flexDirection: 'row' }}>
                                 <View style={styles.iconContainer}>
-                                    <Image source={Icon5} style={{flex: 1}} resizeMode="contain" />
+                                    <Image source={Icon5} style={{ flex: 1 }} resizeMode="contain" />
                                 </View>
                                 <View style={{ width: Dimensions.get('screen').width - 180 }}>
-                                    <Text style={styles.link}>Collect Measurements at Home</Text>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Common', {
+                                        screen: 'clothcategory'
+                                    })}>
+                                        <Text style={styles.link}>Collect Measurements at Home</Text>
+                                    </TouchableOpacity>
                                     <TouchableOpacity style={styles.btnView}>
                                         <Text style={styles.btnLabel}>check your pincode is eligible</Text>
                                     </TouchableOpacity>

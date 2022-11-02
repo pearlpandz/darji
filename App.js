@@ -25,6 +25,8 @@ import BlogPage from './src/pages/App/blogs';
 import AccountPage from './src/pages/App/settings';
 import SelectDesignOption from './src/pages/App/home/selectDesignOption';
 import SelectDressToDesign from './src/pages/App/home/selectDressToDesign';
+import ClothCategory from './src/pages/App/home/clothCategory';
+import Measurement from './src/pages/App/home/measurement';
 
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
@@ -164,73 +166,23 @@ const TabStackScreen = () => (
 const CommonStack = createNativeStackNavigator();
 const CommonStackScreen = () => (
   <CommonStack.Navigator screenOptions={{ headerShown: false }}>
-
     <CommonStack.Screen name="myprofile" component={Profile} options={{
       headerShown: false,
     }} />
-    <CommonStack.Screen name="register" component={Register} options={{
-      headerShown: true,
-      title: 'Register',
-      headerTitleAlign: 'center',
+    <CommonStack.Screen name="clothcategory" component={ClothCategory} options={() => ({ 
+      title: "Cloth Category", 
+      headerShown: true, 
       headerTitleStyle: {
         fontSize: 16,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
       },
-    }} />
-    <CommonStack.Screen name="login" component={Login} options={{
-      headerShown: true,
-      title: 'Login',
-      headerTitleAlign: 'center',
-      headerTitleStyle: {
-        fontSize: 16,
-        fontWeight: 'bold'
-      },
-    }} />
-    <CommonStack.Screen name="otp" component={OtpValidation} options={{
-      headerShown: true,
-      title: 'OTP Verification',
-      headerTitleAlign: 'center',
-      headerTitleStyle: {
-        fontSize: 16,
-        fontWeight: 'bold'
-      },
-    }} />
-    <CommonStack.Screen name="changepassword" component={ChangePassword} options={{
-      headerShown: true,
-      title: 'Change Password',
-      headerTitleAlign: 'center',
-      headerTitleStyle: {
-        fontSize: 16,
-        fontWeight: 'bold'
-      },
-    }} />
-    <CommonStack.Screen name="forgetpassword" component={ForgetPassword} options={{
-      headerShown: true,
-      title: 'Forget Password',
-      headerTitleAlign: 'center',
-      headerTitleStyle: {
-        fontSize: 16,
-        fontWeight: 'bold'
-      },
-    }} />
-    <CommonStack.Screen name="filter" component={Filter} options={{
-      headerShown: true,
-      title: 'Filter',
-      headerTitleAlign: 'center',
-      headerTitleStyle: {
-        fontSize: 16,
-        fontWeight: 'bold'
-      },
-    }} />
-    <CommonStack.Screen name="location" component={Location} options={{
-      headerShown: true,
-      title: 'Enter Location',
-      headerTitleAlign: 'center',
-      headerTitleStyle: {
-        fontSize: 16,
-        fontWeight: 'bold'
-      },
-    }} />
+    })}
+    />
+    <CommonStack.Screen name="measurement" component={Measurement} options={() => ({ 
+      title: "Measurement", 
+      headerShown: false
+    })}
+    />
 
   </CommonStack.Navigator>
 );

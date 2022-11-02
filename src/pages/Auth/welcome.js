@@ -16,7 +16,7 @@ const slides = [
     key: 2,
     title: 'Alter Your Cloths',
     text: 'we have introduced the ability to alter your clothes yourself to make changes to past orders',
-    image: require('./../../assets/images/women.png'),
+    image: require('./../../assets/images/women.jpg'),
     backgroundColor: '#D97D54',
   },
   {
