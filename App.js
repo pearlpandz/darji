@@ -27,6 +27,7 @@ import SelectDesignOption from './src/pages/App/home/selectDesignOption';
 import SelectDressToDesign from './src/pages/App/home/selectDressToDesign';
 import ClothCategory from './src/pages/App/home/clothCategory';
 import Measurement from './src/pages/App/home/measurement';
+import SuccessMeasurement from './src/pages/App/home/successMeasurement';
 
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
@@ -183,7 +184,11 @@ const CommonStackScreen = () => (
       headerShown: false
     })}
     />
-
+    <CommonStack.Screen name="successMeasurement" component={SuccessMeasurement} options={() => ({ 
+      title: "Measurement", 
+      headerShown: false
+    })}
+    />
   </CommonStack.Navigator>
 );
 

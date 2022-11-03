@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { Text, View, StatusBar, SafeAreaView, StyleSheet, Image, FlatList, Dimensions, TouchableOpacity, ScrollView, TextInput } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Button from '../../../reusables/button';
 import Shirt from '../../../reusables/customization/shirt';
 
 
@@ -58,14 +59,15 @@ function Measurement({ routes, navigation }) {
           <Text style={styles.cardInfo}>2/6</Text>
           <Text style={styles.cardTitle}>{item.title}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-            {[36, 38, 40, 42, 44, 46, 48].map((item, key) => <TouchableOpacity onPress={() => setConfig({ ...config, size: item })}>
-              <Text style={[styles.size, {
-                borderColor: config.size === item ? '#D97D54' : '#C8D1D3',
-                borderStyle: config.size === item ? 'solid' : 'dashed',
-                backgroundColor: config.size === item ? '#fff' : '#F0F3F4'
-              }]} key={key}>{item}</Text>
-            </TouchableOpacity>
-            )}
+            {[36, 38, 40, 42, 44, 46, 48].map((item, key) => (
+              <TouchableOpacity key={key} onPress={() => setConfig({ ...config, size: item })}>
+                <Text style={[styles.size, {
+                  borderColor: config.size === item ? '#D97D54' : '#C8D1D3',
+                  borderStyle: config.size === item ? 'solid' : 'dashed',
+                  backgroundColor: config.size === item ? '#fff' : '#F0F3F4'
+                }]}>{item}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
@@ -92,14 +94,15 @@ function Measurement({ routes, navigation }) {
           <Text style={styles.cardInfo}>4/6</Text>
           <Text style={styles.cardTitle}>{item.title}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-            {["5'0", "5'1", "5'2", "5'3", "5'4", "5'5", "5'6", "5'7", "5'8", "5'9"].map((item, key) => <TouchableOpacity onPress={() => setConfig({ ...config, height: item })}>
-              <Text style={[styles.size, {
-                borderColor: config.height === item ? '#D97D54' : '#C8D1D3',
-                borderStyle: config.height === item ? 'solid' : 'dashed',
-                backgroundColor: config.height === item ? '#fff' : '#F0F3F4'
-              }]} key={key}>{item}</Text>
-            </TouchableOpacity>
-            )}
+            {["5'0", "5'1", "5'2", "5'3", "5'4", "5'5", "5'6", "5'7", "5'8", "5'9"].map((item, key) => (
+              <TouchableOpacity key={key} onPress={() => setConfig({ ...config, height: item })}>
+                <Text style={[styles.size, {
+                  borderColor: config.height === item ? '#D97D54' : '#C8D1D3',
+                  borderStyle: config.height === item ? 'solid' : 'dashed',
+                  backgroundColor: config.height === item ? '#fff' : '#F0F3F4'
+                }]}>{item}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
@@ -122,11 +125,15 @@ function Measurement({ routes, navigation }) {
         </View>
 
       case 'note':
-        return <View key={item.index} style={[styles.card, {paddingHorizontal: 20}]}>
-          <Text style={styles.cardInfo}>6/6</Text>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <TextInput style={styles.input} multiline numberOfLines={8} textAlignVertical="top" />
+        return <View style={{ marginBottom: 10 }}>
+          <View key={item.index} style={[styles.card, { paddingHorizontal: 20, marginBottom: 10 }]}>
+            <Text style={styles.cardInfo}>6/6</Text>
+            <Text style={styles.cardTitle}>{item.title}</Text>
+            <TextInput style={[styles.input]} multiline numberOfLines={8} textAlignVertical="top" />
+          </View>
+          <Button label="save & next" type="primary" width={Dimensions.get('window').width - 60} onPress={() => navigation.navigate('Common', { screen: 'successMeasurement' })} />
         </View>
+
 
       default:
         break;
@@ -135,13 +142,15 @@ function Measurement({ routes, navigation }) {
 
   return (
     <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, backgroundColor: '#87BCBF' }}>
-      <ScrollView>
-        <View style={styles.horizontalAlign}>
-          <Ionicons name='chevron-back' size={22} color="#fff" onPress={() => navigation.goBack()} />
-          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '500' }}>Measurements (Shirt)</Text>
+      <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={false}>
+        <View>
+          <View style={[styles.horizontalAlign]}>
+            <Ionicons name='chevron-back' size={22} color="#fff" onPress={() => navigation.goBack()} />
+            <Text style={{ color: '#fff', fontSize: 16, fontWeight: '500' }}>Measurements (Shirt)</Text>
+          </View>
         </View>
 
-        <View style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <Shirt config={config} />
         </View>
         <View>
@@ -165,7 +174,8 @@ function Measurement({ routes, navigation }) {
 const styles = StyleSheet.create({
   horizontalAlign: {
     flexDirection: 'row',
-    padding: 15
+    padding: 15,
+    backgroundColor: '#87BCBF'
   },
   card: {
     backgroundColor: '#fff',
@@ -175,8 +185,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 10,
     borderRadius: 12,
-    flex: 1,
-    position: 'relative'
+    position: 'relative',
+    height: 245
   },
   cardTitle: {
     color: '#334856',
@@ -212,9 +222,9 @@ const styles = StyleSheet.create({
     color: '#fff'
   },
   input: {
-    borderWidth: 1, 
+    borderWidth: 1,
     borderColor: '#E6E6E6',
-    padding: 15, 
+    padding: 15,
     borderRadius: 12
   }
 })
