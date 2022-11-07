@@ -35,7 +35,7 @@ function ClothCategory({ navigation }) {
             <View style={styles.imageContainer}>
                 <Image style={{ flex: 1, width: '100%' }} source={BACKGROUND_BANNER} resizeMode="cover" />
             </View>
-            <View style={styles.titleCard}>
+            {/* <View style={styles.titleCard}>
                 <View style={styles.cardDetails}>
                     <View style={{ marginLeft: 20 }}>
                         <Text style={{ fontWeight: '500', color: '#fff', fontSize: 16 }}>Address:</Text>
@@ -46,11 +46,11 @@ function ClothCategory({ navigation }) {
                         <Text style={{ color: '#fff' }}>{pickupAddress?.fullAddress}</Text>
                     </View>}
                 </View>
-            </View>
+            </View> */}
             <View style={{ paddingHorizontal: 20, position: 'relative' }}>
                 <View style={styles.designs}>
                     <View style={{ borderBottomWidth: 1, borderColor: '#f1f3f4', }}>
-                        <Pressable>
+                        <Pressable onPress={() => navigation.navigate('clothselection')}>
                             <View style={styles.desginView}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <View style={styles.iconContainer}>
@@ -100,7 +100,7 @@ function ClothCategory({ navigation }) {
 
 const styles = StyleSheet.create({
     imageContainer: {
-        height: 250
+        height: Dimensions.get('window').height / 2
     },
     titleCard: {
         backgroundColor: '#404040',

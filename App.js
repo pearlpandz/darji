@@ -28,6 +28,9 @@ import SelectDressToDesign from './src/pages/App/home/selectDressToDesign';
 import ClothCategory from './src/pages/App/home/clothCategory';
 import Measurement from './src/pages/App/home/measurement';
 import SuccessMeasurement from './src/pages/App/home/successMeasurement';
+import ClothSelection from './src/pages/App/home/clothSelection';
+import ClothDetail from './src/pages/App/home/clothDetailView';
+import ClothList from './src/pages/App/home/clothListView';
 
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
@@ -170,22 +173,41 @@ const CommonStackScreen = () => (
     <CommonStack.Screen name="myprofile" component={Profile} options={{
       headerShown: false,
     }} />
-    <CommonStack.Screen name="clothcategory" component={ClothCategory} options={() => ({ 
-      title: "Cloth Category", 
-      headerShown: true, 
+    <CommonStack.Screen name="clothcategory" component={ClothCategory} options={() => ({
+      title: "Cloth Category",
+      headerShown: true,
       headerTitleStyle: {
         fontSize: 16,
         fontWeight: 'bold',
       },
     })}
     />
-    <CommonStack.Screen name="measurement" component={Measurement} options={() => ({ 
-      title: "Measurement", 
+    <CommonStack.Screen name="clothselection" component={ClothSelection} options={() => ({
+      title: "Cloth Selection",
+      headerShown: true,
+      headerTitleStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
+    })}
+    />
+    <CommonStack.Screen name="clothdetail" component={ClothDetail} options={() => ({
+      title: "Cloth Detail",
       headerShown: false
     })}
     />
-    <CommonStack.Screen name="successMeasurement" component={SuccessMeasurement} options={() => ({ 
-      title: "Measurement", 
+    <CommonStack.Screen name="clothlist" component={ClothList} options={() => ({
+      title: "Cloth List",
+      headerShown: false
+    })}
+    />
+    <CommonStack.Screen name="measurement" component={Measurement} options={() => ({
+      title: "Measurement",
+      headerShown: false
+    })}
+    />
+    <CommonStack.Screen name="successMeasurement" component={SuccessMeasurement} options={() => ({
+      title: "Measurement",
       headerShown: false
     })}
     />
@@ -197,18 +219,18 @@ const HomeStack = createNativeStackNavigator();
 const HomeStackScreen = () => (
   <HomeStack.Navigator initialRouteName="home" screenOptions={{ headerShown: false }}>
     <HomeStack.Screen name="home" component={HomePage} />
-    <HomeStack.Screen name="selectdesign" component={SelectDesignOption} options={({ route }) => ({ 
+    <HomeStack.Screen name="selectdesign" component={SelectDesignOption} options={({ route }) => ({
       title: route.params.title,
-      headerShown: true, 
+      headerShown: true,
       headerTitleStyle: {
         fontSize: 16,
         fontWeight: 'bold',
       },
     })}
     />
-    <HomeStack.Screen name="selectdress" component={SelectDressToDesign} options={({ route }) => ({ 
-      title: route.params.title, 
-      headerShown: true, 
+    <HomeStack.Screen name="selectdress" component={SelectDressToDesign} options={({ route }) => ({
+      title: route.params.title,
+      headerShown: true,
       headerTitleStyle: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -238,8 +260,8 @@ const AccountStackScreen = () => (
 const RootStack = createNativeStackNavigator();
 const RootStackScreen = ({ isWelcomed, isAuthenticated }) => {
   return (
-    <RootStack.Navigator 
-      screenOptions={{ headerShown: false }} 
+    <RootStack.Navigator
+      screenOptions={{ headerShown: false }}
       initialRouteName={isAuthenticated ? isWelcomed ? 'App' : 'Welcome' : 'Auth'}>
       {
         isAuthenticated ?
