@@ -31,6 +31,7 @@ import SuccessMeasurement from './src/pages/App/home/successMeasurement';
 import ClothSelection from './src/pages/App/home/clothSelection';
 import ClothDetail from './src/pages/App/home/clothDetailView';
 import ClothList from './src/pages/App/home/clothListView';
+import Summary from './src/pages/App/home/summary';
 
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
@@ -198,6 +199,11 @@ const CommonStackScreen = () => (
     />
     <CommonStack.Screen name="clothlist" component={ClothList} options={() => ({
       title: "Cloth List",
+      headerShown: false
+    })}
+    />
+    <CommonStack.Screen name="summary" component={Summary} options={() => ({
+      title: "Summary",
       headerShown: false
     })}
     />

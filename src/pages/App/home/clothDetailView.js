@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import { Image, View, ScrollView, StyleSheet, Text, Pressable } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import BACKGROUND_BANNER from './../../../assets/images/cloth.jpg';
 import ICON from './../../../assets/icons/icon-13.png';
 import Button from '../../../reusables/button';
 
@@ -11,7 +10,10 @@ function ClothDetail({ route, navigation }) {
     return (
         <ScrollView style={{ backgroundColor: '#fff' }}>
             <View style={styles.imageContainer}>
-                <Image style={{ flex: 1, width: '100%' }} source={BACKGROUND_BANNER} resizeMode="cover" />
+                <Pressable style={styles.backArrow} onPress={() => navigation.goBack()}>
+                    <Ionicons name='chevron-back' size={24} color="#fff" />
+                </Pressable>
+                <Image style={{ flex: 1, width: '100%' }} source={image} resizeMode="cover" />
             </View>
             <View style={styles.titleCard}>
                 <View style={styles.iconContainer}>
@@ -49,7 +51,7 @@ function ClothDetail({ route, navigation }) {
                     <Text style={styles.sectionContent}>Color: Blue</Text>
                 </View>
                 <View style={{alignItems: 'center', marginTop: 30}}>
-                    <Button label="select" type="primaryoutline" width={150} />
+                    <Button label="select" type="primaryoutline" width={150} onPress={() => navigation.navigate('summary')} />
                 </View>
             </View>
         </ScrollView>
@@ -65,7 +67,20 @@ const styles = StyleSheet.create({
         elevation: 20
     },
     imageContainer: {
-        height: 250
+        height: 280,
+        position: 'relative'
+    },
+    backArrow: {
+        position: 'absolute',
+        top: 30,
+        zIndex: 10,
+        backgroundColor: '#334856',
+        left: 10,
+        width: 36,
+        height: 36,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 50
     },
     titleCard: {
         backgroundColor: '#334856',

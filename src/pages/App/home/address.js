@@ -17,6 +17,7 @@ function Address({setAddress, setActionSheet}) {
                     value={address?.fullAddress}
                     onChangeText={(_address) => { setCompleteAddress({...address, fullAddress: _address}) }}
                     underlineColorAndroid="transparent"
+                    textAlignVertical="top"
                 />
                 <TextInput
                     style={styles.input}

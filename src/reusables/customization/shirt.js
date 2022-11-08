@@ -7,34 +7,34 @@ import SHIRT_BODYTYPE from './../../assets/customization/shirt/shirt-bodytype.pn
 import SHIRT_FIT from './../../assets/customization/shirt/shirt-fit.png'
 import SHIRT_HEIGHT from './../../assets/customization/shirt/shirt-height.png'
 
-function Shirt({config}) {
+function Shirt({ config }) {
     const { size, shoulder, fit, height, bodyType } = config;
     return (
-            <View style={styles.container}>
-                {size ? <View style={styles.shirtSizeContainer}>
-                    <Text style={styles.measurements}>{size} cms</Text>
-                    <Image style={styles.shirtSize} source={SHIRT_SIZE} />
-                </View> : null}
-                {shoulder ? <View style={styles.shirtShoulderContainer}>
-                    <Image style={styles.shirtShoulder} source={SHIRT_SHOULDER} />
-                    <Text style={[styles.measurements]}>{shoulder}</Text>
-                </View> : null}
-                <View style={styles.shirtContainer}>
-                    <Image style={styles.shirtImg} source={SHIRT} />
-                </View>
-                {fit ? <View style={styles.shirtFitContainer}>
-                    <Image style={styles.shirFit} source={SHIRT_FIT} />
-                    <Text style={[styles.measurements, { position: 'absolute', bottom: 50 }]}>{fit}</Text>
-                </View> : null}
-                {bodyType ? <View style={styles.shirtBodyTypeContainer}>
-                    <Image style={styles.shirtBodyType} source={SHIRT_BODYTYPE} />
-                    <Text style={[styles.measurements, { marginTop: 10 }]}>{bodyType}</Text>
-                </View> : null}
-                {height ? <View style={styles.shirtHeightContainer}>
-                    <Image style={styles.shirtHeight} source={SHIRT_HEIGHT} />
-                    <Text style={[styles.measurements, { position: 'absolute', bottom: '50%', right: 30 }]}>{height}</Text>
-                </View> : null}
+        <View style={styles.container}>
+            {size ? <View style={styles.shirtSizeContainer}>
+                <Text style={styles.measurements}>{size} cms</Text>
+                <Image style={styles.shirtSize} source={SHIRT_SIZE} />
+            </View> : null}
+            {shoulder ? <View style={styles.shirtShoulderContainer}>
+                <Image style={styles.shirtShoulder} source={SHIRT_SHOULDER} />
+                <Text style={[styles.measurements]}>{shoulder}</Text>
+            </View> : null}
+            <View style={styles.shirtContainer}>
+                <Image style={styles.shirtImg} source={SHIRT} />
             </View>
+            {fit ? <View style={styles.shirtFitContainer}>
+                <Image style={styles.shirFit} source={SHIRT_FIT} />
+                <Text style={[styles.measurements, { position: 'absolute', bottom: 50 }]}>{fit}</Text>
+            </View> : null}
+            {bodyType ? <View style={styles.shirtBodyTypeContainer}>
+                <Image style={styles.shirtBodyType} source={SHIRT_BODYTYPE} />
+                <Text style={[styles.measurements, { marginTop: 10 }]}>{bodyType}</Text>
+            </View> : null}
+            {height ? <View style={styles.shirtHeightContainer}>
+                <Image style={styles.shirtHeight} source={SHIRT_HEIGHT} />
+                <Text style={[styles.measurements, { position: 'absolute', bottom: '50%', right: 30 }]}>{height}</Text>
+            </View> : null}
+        </View>
     )
 }
 
