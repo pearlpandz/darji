@@ -76,7 +76,7 @@ function Summary({navigation}) {
 
                 <View style={[styles.addressSection, { justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', paddingTop: 0 }]}>
                     <Button type="primaryoutline" label="save for later" width={(Dimensions.get('window').width - 50) / 2} />
-                    <Button type="primary" label="checkout" width={(Dimensions.get('window').width - 50) / 2} />
+                    <Button type="primary" label="checkout" width={(Dimensions.get('window').width - 50) / 2} onPress={() => navigation.navigate('finalquote')} />
                 </View>
             </ScrollView>
         </SafeAreaView>

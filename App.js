@@ -32,6 +32,7 @@ import ClothSelection from './src/pages/App/home/clothSelection';
 import ClothDetail from './src/pages/App/home/clothDetailView';
 import ClothList from './src/pages/App/home/clothListView';
 import Summary from './src/pages/App/home/summary';
+import FinalQuote from './src/pages/App/home/finalQuote';
 
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
@@ -207,13 +208,18 @@ const CommonStackScreen = () => (
       headerShown: false
     })}
     />
+    <CommonStack.Screen name="finalquote" component={FinalQuote} options={() => ({
+      title: "Final Quote",
+      headerShown: false
+    })}
+    />
     <CommonStack.Screen name="measurement" component={Measurement} options={() => ({
       title: "Measurement",
       headerShown: false
     })}
     />
     <CommonStack.Screen name="successMeasurement" component={SuccessMeasurement} options={() => ({
-      title: "Measurement",
+      title: "Success Measurement",
       headerShown: false
     })}
     />
