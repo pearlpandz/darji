@@ -58,7 +58,9 @@ function SelectDesignOption({ route, navigation }) {
                             <Button label="pant" type="primaryoutline" width={(Dimensions.get('screen').width - 100) / 2} />
                         </View>}
                     </View>
-                    <View style={[styles.desginView, { borderBottomWidth: 1, borderColor: '#f1f3f4', }]}>
+                    <Pressable 
+                        style={[styles.desginView, { borderBottomWidth: 1, borderColor: '#f1f3f4', }]}
+                        onPress={() => navigation.navigate('desginByMyself')} >
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={styles.iconContainer}>
                                 <Image source={Icon2} style={{ flex: 1 }} resizeMode="contain" />
@@ -68,7 +70,7 @@ function SelectDesignOption({ route, navigation }) {
                             </View>
                         </View>
                         <Ionicons name="chevron-forward" size={20} color='#e8875b' />
-                    </View>
+                    </Pressable>
                     <View style={[styles.desginView]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={styles.iconContainer}>

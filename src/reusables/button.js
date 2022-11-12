@@ -1,9 +1,9 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native'
 
-function Button({ type, label, onPress, width }) {
+function Button({ type, label, onPress, width, disabled }) {
     return (
-        <TouchableOpacity style={[type ? styles[type] : styles.secondary, {width: width ? width : '100%'}] } onPress={onPress}>
+        <TouchableOpacity style={[type ? styles[type] : styles.secondary, {width: width ? width : '100%'}] } onPress={onPress} disabled={disabled}>
             <Text style={type ? styles[type+'Label'] : styles.secondaryLabel}>{label}</Text>
         </TouchableOpacity>
     )
@@ -42,14 +42,15 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline'
     },
     disabled: {
-        // backgroundColor: '#f7f7f7',
-        paddingVertical: 8,
-        paddingHorizontal: 25,
+        backgroundColor: '#f4f4f4',
+        alignItems: 'center',
+        paddingVertical: 14,
         borderRadius: 6
     },
     disabledLabel: {
-        color: '#585858',
-        textTransform: 'capitalize',
+        color: '#d0d0d0',
+        textTransform: 'uppercase',
+        fontWeight: 'bold'
     }
 })
 

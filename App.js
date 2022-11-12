@@ -33,6 +33,9 @@ import ClothDetail from './src/pages/App/home/clothDetailView';
 import ClothList from './src/pages/App/home/clothListView';
 import Summary from './src/pages/App/home/summary';
 import FinalQuote from './src/pages/App/home/finalQuote';
+import StylistPage from './src/pages/App/stylist';
+import DesginByMyself from './src/pages/App/home/DesginByMyself';
+import ShirtCustomization from './src/pages/App/home/DesginByMyself/shirt';
 
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
@@ -116,6 +119,8 @@ const TabStackScreen = () => (
           iconName = focused ? 'home' : 'home-outline';
         } else if (route.name === 'cart') {
           iconName = focused ? 'cart' : 'cart-outline';
+        } else if (route.name === 'stylist') {
+          iconName = focused ? 'shirt' : 'shirt-outline';
         } else if (route.name === 'blog') {
           iconName = focused ? 'reader' : 'reader-outline';
         } else if (route.name === 'setting') {
@@ -142,12 +147,20 @@ const TabStackScreen = () => (
         tabBarLabel: 'Home',
       }}
     />
-    <Tab.Screen
+    {/* <Tab.Screen
       name="blog"
       component={BlogStackScreen}
       options={{
         headerShown: false,
         tabBarLabel: 'Blogs',
+      }}
+    /> */}
+    <Tab.Screen
+      name="stylist"
+      component={StylistStackScreen}
+      options={{
+        headerShown: false,
+        tabBarLabel: 'Stylist',
       }}
     />
     <Tab.Screen
@@ -223,6 +236,11 @@ const CommonStackScreen = () => (
       headerShown: false
     })}
     />
+    <CommonStack.Screen name="shirtCustomization" component={ShirtCustomization} options={() => ({
+      title: "Shirt",
+      headerShown: false
+    })}
+    />
   </CommonStack.Navigator>
 );
 
@@ -249,6 +267,15 @@ const HomeStackScreen = () => (
       },
     })}
     />
+     <HomeStack.Screen name="desginByMyself" component={DesginByMyself} options={() => ({
+      title: "Design By Myself",
+      headerShown: true,
+      headerTitleStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
+    })}
+    />
   </HomeStack.Navigator>
 );
 
@@ -258,6 +285,14 @@ const BlogStackScreen = () => (
   <BlogPageStack.Navigator initialRouteName="index" screenOptions={{ headerShown: false }}>
     <BlogPageStack.Screen name="index" component={BlogPage} />
   </BlogPageStack.Navigator>
+);
+
+// Stylist page and it's stack screens
+const StylistPageStack = createNativeStackNavigator();
+const StylistStackScreen = () => (
+  <StylistPageStack.Navigator initialRouteName="index" screenOptions={{ headerShown: false }}>
+    <StylistPageStack.Screen name="index" component={StylistPage} />
+  </StylistPageStack.Navigator>
 );
 
 // Account page and it's stack screens

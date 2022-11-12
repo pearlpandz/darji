@@ -79,7 +79,7 @@ function HomePage({ navigation }) {
           </View>
         </View>
 
-        <View style={{ marginVertical: 15 }}>
+        {/* <View style={{ marginVertical: 15 }}>
           <Text style={styles.sectionTitle}>fashion blog</Text>
           <View style={{ paddingHorizontal: 20 }}>
             {
@@ -96,7 +96,7 @@ function HomePage({ navigation }) {
               ))
             }
           </View>
-        </View>
+        </View> */}
 
       </ScrollView>
     </SafeAreaView>

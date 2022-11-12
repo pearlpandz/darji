@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const PRIMARY_COLOR = 'rgb(0,98,255)';
 const WHITE = '#ffffff';
@@ -21,7 +21,7 @@ const ActionSheet = (props) => {
       {
         actionSheetItems.map((actionItem, index) => {
           return (
-            <TouchableHighlight
+            <Pressable
               style={[
                 styles.actionSheetView,
                 index === 0 && {
@@ -63,7 +63,7 @@ const ActionSheet = (props) => {
                 ]}>
                 {actionItem.label}
               </Text>
-            </TouchableHighlight>
+            </Pressable>
           )
         })
       }
