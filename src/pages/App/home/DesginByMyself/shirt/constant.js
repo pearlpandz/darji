@@ -11,6 +11,9 @@ export const CUSTOMIZE_OPTIONS = [{
     name: 'cuff style',
     icon: require('./../../../../../assets/icons/icon-14.png')
 }, {
+    name: 'cuff type',
+    icon: require('./../../../../../assets/icons/icon-14.png')
+}, {
     name: 'back',
     icon: require('./../../../../../assets/icons/icon-18.png')
 }, {
@@ -78,6 +81,14 @@ export const CUFFS = [{
 }, {
     name: 'french',
     icon: require('./../../../../../assets/icons/cuffs/cuff-4.png')
+}]
+
+export const CUFFS_TYPE = [{
+    name: 'inside button',
+    icon: require('./../../../../../assets/icons/cuffs/inner.png')
+}, {
+    name: 'outside button',
+    icon: require('./../../../../../assets/icons/cuffs/outter.png')
 }]
 
 export const BACKS = [{

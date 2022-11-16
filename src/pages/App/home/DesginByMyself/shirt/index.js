@@ -2,9 +2,9 @@ import React, { useMemo, useState } from 'react'
 import { Text, View, StatusBar, SafeAreaView, StyleSheet, Image, FlatList, Dimensions, TouchableOpacity, ScrollView, TextInput, Pressable } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from '../../../../../reusables/button';
-import Shirt from '../../../../../reusables/customization/shirt';
+import MyShirt from '../../../../../reusables/customization/myshirt';
 import CollorOptions from './collorOptions';
-import { CUSTOMIZE_OPTIONS, COLLORS, POCKETS, SLEEVES, CUFFS, BACKS, STAMPS } from './constant';
+import { CUSTOMIZE_OPTIONS, COLLORS, POCKETS, SLEEVES, CUFFS, BACKS, STAMPS, CUFFS_TYPE } from './constant';
 
 function ShirtCustomization({ routes, navigation }) {
   const [config, setConfig] = useState({
@@ -12,6 +12,7 @@ function ShirtCustomization({ routes, navigation }) {
     pocket: 'single pocket',
     sleeve: 'full hand',
     cuff: 'single button',
+    cuffStyle: 'inner style',
     back: 'no pleats',
     stamp: 'collar'
   });
@@ -44,17 +45,23 @@ function ShirtCustomization({ routes, navigation }) {
           data={CUFFS}
           selected={config.cuff}
           setSelected={(item) => setConfig({ ...config, cuff: item })} />
-
+      
       case 4:
+        return <CollorOptions
+          data={CUFFS_TYPE}
+          selected={config.cuffStyle}
+          setSelected={(item) => setConfig({ ...config, cuffStyle: item })} />
+
+      case 5:
         return <CollorOptions
           data={BACKS}
           selected={config.back}
           setSelected={(item) => setConfig({ ...config, back: item })} />
 
-      case 5:
+      case 6:
         return <CollorOptions
           data={STAMPS}
-          selected={config.pocket}
+          selected={config.stamp}
           setSelected={(item) => setConfig({ ...config, stamp: item })} />
 
       default:
@@ -77,9 +84,9 @@ function ShirtCustomization({ routes, navigation }) {
           </View>
         </View>
 
-        {/* <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Shirt config={config} />
-        </View> */}
+        <View style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
+          <MyShirt config={config} />
+        </View>
         <View style={styles.container}>
           <View style={styles.customizationSection}>
             {
