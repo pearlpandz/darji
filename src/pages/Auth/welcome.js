@@ -108,23 +108,15 @@ function Welcome({ navigation }) {
       </View>
     );
   };
-  const _onDone = async () => {
-    // User finished the introduction. Show real app through
-    // navigation or simply by controlling state
-
+  const onDone = async () => {
     setWelcome(true);
-    // await AsyncStorage.setItem('isFirstVisit', true.toString()) // temp hide
-    setTimeout(() => {
-      navigation.navigate('App', {
-        screen: 'landing'
-      });
-    }, 1000);
-  };
+    await AsyncStorage.setItem('isFirstVisit', String(true))
+  }; 
   return (
     <AppIntroSlider
       renderItem={_renderItem}
       data={slides}
-      onDone={_onDone}
+      onDone={onDone}
       showSkipButton={true}
       skipLabel={<Text style={styles.skipBtn}>skip</Text>}
       nextLabel={<Text style={styles.nextBtn}>next</Text>}

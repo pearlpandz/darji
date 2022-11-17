@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useState, useEffect, useContext } from 'react';
+import 'react-native-gesture-handler';
+import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList, } from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 
@@ -16,7 +19,7 @@ import Register from './src/pages/Auth/register';
 import ForgetPassword from './src/pages/App/settings/forgetpassword';
 import OtpValidation from './src/pages/Auth/otp';
 
-import Profile from './src/pages/App/settings/profile';
+import Profile from './src/pages/App/settings/profile'; 
 import ChangePassword from './src/pages/App/settings/changepassword';
 
 import HomePage from './src/pages/App/home';
@@ -36,6 +39,58 @@ import FinalQuote from './src/pages/App/home/finalQuote';
 import StylistPage from './src/pages/App/stylist';
 import DesginByMyself from './src/pages/App/home/DesginByMyself';
 import ShirtCustomization from './src/pages/App/home/DesginByMyself/shirt';
+import { Text } from 'react-native';
+
+const Drawer = createDrawerNavigator();
+const DrawerScreen = () => {
+  const { setAuthStatus } = useContext(AuthContext);
+  return <Drawer.Navigator
+    initialRouteName='indexDrawer'
+    screenOptions={{
+      headerShown: false,
+      swipeEnabled: true,
+      animationEnabled: false,
+    }}
+    drawerContent={props => {
+      return (
+        <DrawerContentScrollView {...props}>
+          <DrawerItemList {...props} />
+          <DrawerItem
+            label={'Sign out'}
+            icon={({ focused, size }) => (
+              <Ionicons name="power-outline" size={size} color="#536677" />
+            )}
+            onPress={async () => {
+              setAuthStatus(false);
+              await AsyncStorage.setItem('isAuthenticated', String(false));
+            }}
+          />
+        </DrawerContentScrollView>
+      );
+    }}>
+    <Drawer.Screen
+      name="indexDrawer"
+      component={TabStackScreen}
+      options={{
+        headerShown: false,
+        drawerItemStyle: { height: 0 },
+        drawerIcon: ({ focused, size }) => (
+          <AntDesignIcon name="back" size={size} color="#536677" />
+        )
+      }}
+    />
+    {/* <Drawer.Screen
+      name="return"
+      component={()=><Text>test</Text>}
+      options={{
+        drawerIcon: ({ focused, size }) => (
+          <AntDesignIcon name="back" size={size} color="#536677" />
+        )
+      }}
+    /> */}
+  </Drawer.Navigator>
+};
+
 
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
@@ -142,10 +197,10 @@ const TabStackScreen = () => (
     <Tab.Screen
       name="landing"
       component={HomeStackScreen}
-      options={{
+      options={({ navigation }) => ({
         headerShown: false,
         tabBarLabel: 'Home',
-      }}
+      })}
     />
     {/* <Tab.Screen
       name="blog"
@@ -166,10 +221,19 @@ const TabStackScreen = () => (
     <Tab.Screen
       name="cart"
       component={CartPage}
-      options={{
-        headerShown: false,
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: 'Tailor Shop',
         tabBarLabel: 'Cart',
-      }}
+        headerLeft: () => (
+          <Ionicons
+            name="md-menu-outline"
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+            size={24}
+            style={{ paddingLeft: 15 }}
+          />
+        ),
+      })}
     />
     <Tab.Screen
       name="account"
@@ -246,9 +310,24 @@ const CommonStackScreen = () => (
 
 // Home page and it's stack screens
 const HomeStack = createNativeStackNavigator();
-const HomeStackScreen = () => (
-  <HomeStack.Navigator initialRouteName="home" screenOptions={{ headerShown: false }}>
-    <HomeStack.Screen name="home" component={HomePage} />
+const HomeStackScreen = () => {
+  return (<HomeStack.Navigator initialRouteName="home" screenOptions={{ headerShown: false }}>
+    <HomeStack.Screen
+      name="home"
+      component={HomePage}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: 'Tailor Shop',
+        headerLeft: () => (
+          <Ionicons
+            name="md-menu-outline"
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+            size={24}
+            style={{ paddingRight: 15 }}
+          />
+        ),
+      })}
+    />
     <HomeStack.Screen name="selectdesign" component={SelectDesignOption} options={({ route }) => ({
       title: route.params.title,
       headerShown: true,
@@ -267,7 +346,7 @@ const HomeStackScreen = () => (
       },
     })}
     />
-     <HomeStack.Screen name="desginByMyself" component={DesginByMyself} options={() => ({
+    <HomeStack.Screen name="desginByMyself" component={DesginByMyself} options={() => ({
       title: "Design By Myself",
       headerShown: true,
       headerTitleStyle: {
@@ -276,8 +355,8 @@ const HomeStackScreen = () => (
       },
     })}
     />
-  </HomeStack.Navigator>
-);
+  </HomeStack.Navigator>)
+};
 
 // Blog page and it's stack screens
 const BlogPageStack = createNativeStackNavigator();
@@ -291,7 +370,22 @@ const BlogStackScreen = () => (
 const StylistPageStack = createNativeStackNavigator();
 const StylistStackScreen = () => (
   <StylistPageStack.Navigator initialRouteName="index" screenOptions={{ headerShown: false }}>
-    <StylistPageStack.Screen name="index" component={StylistPage} />
+    <StylistPageStack.Screen
+      name="index"
+      component={StylistPage}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: 'Tailor Shop',
+        headerLeft: () => (
+          <Ionicons
+            name="md-menu-outline"
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+            size={24}
+            style={{ paddingRight: 15 }}
+          />
+        ),
+      })}
+    />
   </StylistPageStack.Navigator>
 );
 
@@ -316,10 +410,11 @@ const RootStackScreen = ({ isWelcomed, isAuthenticated }) => {
             <>
               <RootStack.Screen
                 name="App"
-                component={TabStackScreen}
+                component={DrawerScreen}
                 options={{
                   headerShown: false,
-                }} /><RootStack.Screen
+                }} />
+              <RootStack.Screen
                 name="Common"
                 component={CommonStackScreen}
                 options={{

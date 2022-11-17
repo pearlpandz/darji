@@ -50,10 +50,7 @@ function Login({navigation}) {
                         <View style={{ marginTop: 15 }}>
                             <Button label='sign in' type='primary' onPress={async () => {
                                 setAuthStatus(true);
-                                // await AsyncStorage.setItem('isAuthenticated', true.toString());
-                                setTimeout(() => {
-                                    navigation.navigate('Welcome', { screen: 'intro'});
-                                }, 1000);
+                                await AsyncStorage.setItem('isAuthenticated', String(true));
                             }} />
                         </View>
                         <TouchableOpacity onPress={() => navigation.navigate('forgetpassword')}>

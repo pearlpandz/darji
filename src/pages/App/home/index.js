@@ -9,8 +9,7 @@ import GET_A_QUOTE from './../../../assets/images/getquote.png';
 
 function HomePage({ navigation }) {
   return (
-    <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, backgroundColor: '#f7f7f7' }}>
-      <Navigation pageTitle="choose category" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f7f7f7' }}>
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.banner}>
           <Text style={styles.bannerTitle}>Welcome to Tailor Shop</Text>

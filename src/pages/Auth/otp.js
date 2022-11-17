@@ -50,10 +50,7 @@ function OtpValidation({ navigation }) {
                     {/* <Button label='cancel' type='secondary' onPress={() => navigation.goBack()} width={150} /> */}
                     <Button label='verify' type='primary' onPress={async () => {
                         setAuthStatus(true);
-                        // await AsyncStorage.setItem('isAuthenticated', true.toString());
-                        setTimeout(() => {
-                            navigation.navigate('Welcome', { screen: 'intro' });
-                        }, 1000);
+                        await AsyncStorage.setItem('isAuthenticated', String(true));
                     }} />
                 </View>
 
