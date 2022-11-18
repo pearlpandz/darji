@@ -3,7 +3,7 @@ import 'react-native-gesture-handler';
 import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList, } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContent, DrawerContentScrollView, DrawerItem, DrawerItemList, } from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,7 +19,7 @@ import Register from './src/pages/Auth/register';
 import ForgetPassword from './src/pages/App/settings/forgetpassword';
 import OtpValidation from './src/pages/Auth/otp';
 
-import Profile from './src/pages/App/settings/profile'; 
+import Profile from './src/pages/App/settings/profile';
 import ChangePassword from './src/pages/App/settings/changepassword';
 
 import HomePage from './src/pages/App/home';
@@ -39,7 +39,10 @@ import FinalQuote from './src/pages/App/home/finalQuote';
 import StylistPage from './src/pages/App/stylist';
 import DesginByMyself from './src/pages/App/home/DesginByMyself';
 import ShirtCustomization from './src/pages/App/home/DesginByMyself/shirt';
-import { Text } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
+import ReturnPage from './src/pages/App/return';
+
+import AVATAR from './src/assets/images/avatar.png';
 
 const Drawer = createDrawerNavigator();
 const DrawerScreen = () => {
@@ -50,21 +53,35 @@ const DrawerScreen = () => {
       headerShown: false,
       swipeEnabled: true,
       animationEnabled: false,
+      drawerStyle: {
+        backgroundColor: '#344856'
+      }
     }}
     drawerContent={props => {
       return (
-        <DrawerContentScrollView {...props}>
-          <DrawerItemList {...props} />
-          <DrawerItem
-            label={'Sign out'}
-            icon={({ focused, size }) => (
-              <Ionicons name="power-outline" size={size} color="#536677" />
-            )}
+        <DrawerContentScrollView {...props} 
+          contentContainerStyle={{flex: 1,flexDirection: 'column', justifyContent: 'space-between'}}>
+          <View>
+            <View style={{ backgroundColor: '#87BCBF', padding: 20, flexDirection: 'row', alignItems: 'center' }}>
+              <Image source={AVATAR} style={{ width: 60, height: 60, resizeMode: 'contain' }} />
+              <View style={{ marginLeft: 10 }}>
+                <Text style={{ color: '#fff', fontWeight: '600', fontSize: 16 }}>Sandeep Siddamsetty</Text>
+                <Text style={{ color: '#fff', fontWeight: '300' }}>Hyderabad</Text>
+              </View>
+            </View>
+            <DrawerItemList {...props} />
+          </View>
+          <View style={{padding: 20}}>
+          <Pressable
             onPress={async () => {
               setAuthStatus(false);
               await AsyncStorage.setItem('isAuthenticated', String(false));
             }}
-          />
+            style={{borderWidth: 1, borderColor: '#85BABD', borderRadius: 12, padding: 10}}
+          >
+            <Text style={{color: '#fff', textAlign: 'center', textTransform: 'uppercase', fontWeight: '600'}}>logout</Text>
+          </Pressable>
+          </View>
         </DrawerContentScrollView>
       );
     }}>
@@ -74,20 +91,74 @@ const DrawerScreen = () => {
       options={{
         headerShown: false,
         drawerItemStyle: { height: 0 },
+      }}
+    />
+    <Drawer.Screen
+      name="return"
+      component={ReturnPage}
+      options={{
+        drawerLabel: 'return',
+        drawerLabelStyle: { color: '#fff', textTransform: 'capitalize' },
         drawerIcon: ({ focused, size }) => (
-          <AntDesignIcon name="back" size={size} color="#536677" />
+          <Ionicons name="refresh-outline" size={size} color="#87BCBF" />
         )
       }}
     />
-    {/* <Drawer.Screen
-      name="return"
-      component={()=><Text>test</Text>}
+    <Drawer.Screen
+      name="settings"
+      component={ReturnPage}
       options={{
+        drawerLabel: 'settings',
+        drawerLabelStyle: { color: '#fff', textTransform: 'capitalize' },
         drawerIcon: ({ focused, size }) => (
-          <AntDesignIcon name="back" size={size} color="#536677" />
+          <Ionicons name="settings-outline" size={size} color="#87BCBF" />
         )
       }}
-    /> */}
+    />
+    <Drawer.Screen
+      name="notification"
+      component={ReturnPage}
+      options={{
+        drawerLabel: 'notification',
+        drawerLabelStyle: { color: '#fff', textTransform: 'capitalize' },
+        drawerIcon: ({ focused, size }) => (
+          <Ionicons name="notifications-outline" size={size} color="#87BCBF" />
+        )
+      }}
+    />
+    <Drawer.Screen
+      name="help"
+      component={ReturnPage}
+      options={{
+        drawerLabel: 'help & support',
+        drawerLabelStyle: { color: '#fff', textTransform: 'capitalize' },
+        drawerIcon: ({ focused, size }) => (
+          <Ionicons name="help-buoy-outline" size={size} color="#87BCBF" />
+        )
+      }}
+    />
+    <Drawer.Screen
+      name="terms"
+      component={ReturnPage}
+      options={{
+        drawerLabel: 'terms & conditions',
+        drawerLabelStyle: { color: '#fff', textTransform: 'capitalize' },
+        drawerIcon: ({ focused, size }) => (
+          <Ionicons name="document-text-outline" size={size} color="#87BCBF" />
+        )
+      }}
+    />
+    <Drawer.Screen
+      name="privacypolicy"
+      component={ReturnPage}
+      options={{
+        drawerLabel: 'privacy policy',
+        drawerLabelStyle: { color: '#fff', textTransform: 'capitalize' },
+        drawerIcon: ({ focused, size }) => (
+          <Ionicons name="shield-outline" size={size} color="#87BCBF" />
+        )
+      }}
+    />
   </Drawer.Navigator>
 };
 
