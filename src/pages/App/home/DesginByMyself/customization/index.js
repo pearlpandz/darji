@@ -103,7 +103,8 @@ function ShirtCustomization({ routes, navigation }) {
                     underlineColorAndroid="transparent"
                     textAlignVertical="top"
                   />
-                </View> : <><FlatList
+                </View> : <>
+                <FlatList
                   style={styles.customizeOption}
                   data={CUSTOMIZE_OPTIONS}
                   renderItem={({ item, index }) => {

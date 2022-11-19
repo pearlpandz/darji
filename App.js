@@ -38,7 +38,8 @@ import Summary from './src/pages/App/home/summary';
 import FinalQuote from './src/pages/App/home/finalQuote';
 import StylistPage from './src/pages/App/stylist';
 import DesginByMyself from './src/pages/App/home/DesginByMyself';
-import ShirtCustomization from './src/pages/App/home/DesginByMyself/shirt';
+import ShirtCustomization from './src/pages/App/home/DesginByMyself/customization';
+import PantCustomization from './src/pages/App/home/DesginByMyself/customization/pant';
 import { Image, Pressable, Text, View } from 'react-native';
 import ReturnPage from './src/pages/App/return';
 
@@ -373,6 +374,11 @@ const CommonStackScreen = () => (
     />
     <CommonStack.Screen name="shirtCustomization" component={ShirtCustomization} options={() => ({
       title: "Shirt",
+      headerShown: false
+    })}
+    />
+    <CommonStack.Screen name="pantCustomization" component={PantCustomization} options={() => ({
+      title: "Pant",
       headerShown: false
     })}
     />

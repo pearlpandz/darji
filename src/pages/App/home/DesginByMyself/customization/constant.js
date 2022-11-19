@@ -21,6 +21,20 @@ export const CUSTOMIZE_OPTIONS = [{
     icon: require('./../../../../../assets/icons/icon-19.png')
 }]
 
+export const CUSTOMIZE_OPTIONS_PANT = [{
+    name: 'pant',
+    icon: require('./../../../../../assets/icons/icon-20.png')
+}, {
+    name: 'rise',
+    icon: require('./../../../../../assets/icons/icon-21.png')
+}, {
+    name: 'fastening',
+    icon: require('./../../../../../assets/icons/icon-22.png')
+}, {
+    name: 'outer waistband',
+    icon: require('./../../../../../assets/icons/icon-20.png')
+}]
+
 export const COLLORS = [{
     name: 'prince charlie',
     icon: require('./../../../../../assets/icons/collors/collor-1.png')
@@ -117,4 +131,42 @@ export const STAMPS = [{
 }, {
     name: 'cuff',
     icon: require('./../../../../../assets/icons/stamps/stamp-3.png')
+}]
+
+export const PANTS = [{
+    name: 'relaxed',
+    icon: require('./../../../../../assets/icons/pants/pant-1.png')
+}, {
+    name: 'tapered',
+    icon: require('./../../../../../assets/icons/pants/pant-2.png')
+}, {
+    name: 'slim',
+    icon: require('./../../../../../assets/icons/pants/pant-3.png')
+}]
+
+export const RAISES = [{
+    name: 'low',
+    icon: require('./../../../../../assets/icons/rises/rise-1.png')
+}, {
+    name: 'mid',
+    icon: require('./../../../../../assets/icons/rises/rise-2.png')
+}, {
+    name: 'high',
+    icon: require('./../../../../../assets/icons/rises/rise-3.png')
+}]
+
+export const FASTENINGS = [{
+    name: 'button',
+    icon: require('./../../../../../assets/icons/fastenings/fastening-1.png')
+}, {
+    name: 'hook',
+    icon: require('./../../../../../assets/icons/fastenings/fastening-2.png')
+}]
+
+export const WAISTS = [{
+    name: 'regular',
+    icon: require('./../../../../../assets/icons/waists/waist-1.png')
+}, {
+    name: 'extended',
+    icon: require('./../../../../../assets/icons/waists/waist-2.png')
 }]

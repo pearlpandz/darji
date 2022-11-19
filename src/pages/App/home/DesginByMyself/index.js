@@ -38,9 +38,14 @@ function DesginByMyself({navigation}) {
                         <Pressable 
                             style={[styles.cardContainer, styles.boxWithShadow]} 
                             key={index}
-                            onPress={() => navigation.navigate('Common',{
-                                screen: 'shirtCustomization'
-                            })}>
+                            onPress={() => {
+                                if(type === 'shirt') {
+                                    navigation.navigate('Common',{screen: 'shirtCustomization'})
+                                } else if(type === 'pant') {
+                                    navigation.navigate('Common',{screen: 'pantCustomization'})
+                                }
+                            }
+                        }>
                             <Image source={image} style={styles.imageView} />
                             <View style={styles.contentContainer}>
                                 <View style={[styles.iconContainer, styles.boxWithShadow]}><Image source={icon} style={styles.iconView} /></View>
