@@ -4,9 +4,6 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 import Login from './login';
 import Register from './register';
 
-
-
-
 export default function TabPageView({navigation}) {
     const layout = useWindowDimensions();
 

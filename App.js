@@ -44,6 +44,7 @@ import { Image, Pressable, Text, View } from 'react-native';
 import ReturnPage from './src/pages/App/return';
 
 import AVATAR from './src/assets/images/avatar.png';
+import LOGO from './src/assets/logo-1.png';
 
 const Drawer = createDrawerNavigator();
 const DrawerScreen = () => {
@@ -295,7 +296,7 @@ const TabStackScreen = () => (
       component={CartPage}
       options={({ navigation }) => ({
         headerShown: true,
-        headerTitle: 'Tailor Shop',
+        headerTitle: () => <Image source={LOGO} style={{width: 150, height: 30, resizeMode: 'contain'}} />,
         tabBarLabel: 'Cart',
         headerLeft: () => (
           <Ionicons
@@ -394,7 +395,7 @@ const HomeStackScreen = () => {
       component={HomePage}
       options={({ navigation }) => ({
         headerShown: true,
-        headerTitle: 'Tailor Shop',
+        headerTitle: () => <Image source={LOGO} style={{width: 150, height: 30, resizeMode: 'contain'}} />,
         headerLeft: () => (
           <Ionicons
             name="md-menu-outline"
@@ -452,7 +453,7 @@ const StylistStackScreen = () => (
       component={StylistPage}
       options={({ navigation }) => ({
         headerShown: true,
-        headerTitle: 'Tailor Shop',
+        headerTitle: () => <Image source={LOGO} style={{width: 150, height: 30, resizeMode: 'contain'}} />,
         headerLeft: () => (
           <Ionicons
             name="md-menu-outline"
