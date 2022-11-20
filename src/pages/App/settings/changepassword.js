@@ -29,7 +29,7 @@ function ChangePassword({ navigation }) {
         </TouchableOpacity>
       </View>
       <View style={styles.btnContainer}>
-        <Button label="cancel" type="secondary" onPress={() => navigation.goBack()} />
+        {/* <Button label="cancel" type="secondary" onPress={() => navigation.goBack()} /> */}
         <Button label="verify" type="primary" onPress={() => console.log('update password')} />
       </View>
     </View>

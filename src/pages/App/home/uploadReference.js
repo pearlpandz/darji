@@ -1,17 +1,21 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { ScrollView, StyleSheet, Text, View, Image, FlatList, Pressable, Dimensions, TouchableOpacity } from 'react-native'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from '../../../reusables/button'
+import Modal from 'react-native-modal';
+import ValidatePinCode from './validatePincode';
 import BottomBG from './../../../assets/images/bottom-bg-2.png';
 import Icon4 from './../../../assets/icons/icon-4.png';
 import Icon5 from './../../../assets/icons/icon-5.png';
-import { useNavigation } from '@react-navigation/native';
 
 function UploadReference() {
 
     const navigation = useNavigation();
     const [imageList, setImageList] = useState([]);
+    const [actionSheet, setActionSheet] = useState(false);
+    const [pin, setPin] = useState()
 
     const handleFileUpload = () => {
         // launchCamera({
@@ -30,6 +34,19 @@ function UploadReference() {
             }
         })
     }
+
+    const ActionSheetModal = useMemo(() => (
+        <Modal
+            isVisible={actionSheet}
+            style={{
+                margin: 0,
+                justifyContent: 'flex-end',
+            }}>
+            <View>
+                <ValidatePinCode setActionSheet={setActionSheet} setPin={setPin} pin={pin} />
+            </View>
+        </Modal>
+    ), [actionSheet])
 
     return (
         <ScrollView style={{ color: '#fff' }}>
@@ -104,7 +121,7 @@ function UploadReference() {
                                     })}>
                                         <Text style={styles.link}>Collect Measurements at Home</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.btnView}>
+                                    <TouchableOpacity style={styles.btnView} onPress={() => setActionSheet(true)}>
                                         <Text style={styles.btnLabel}>check your pincode is eligible</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -117,6 +134,7 @@ function UploadReference() {
                     </View>
                 </View>
             </View>
+            {ActionSheetModal}
         </ScrollView>
     )
 }

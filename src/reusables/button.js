@@ -35,11 +35,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     secondary: {
-
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        paddingVertical: 14,
+        borderRadius: 6
     },
     secondaryLabel: {
-        textTransform: 'capitalize',
-        textDecorationLine: 'underline'
+        textTransform: 'uppercase',
+        fontWeight: 'bold',
     },
     disabled: {
         backgroundColor: '#f4f4f4',
