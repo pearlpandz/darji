@@ -1,13 +1,60 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Pressable, TextInput, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, TextInput, Dimensions, ScrollView, ToastAndroid, Platform, AlertIOS, Alert } from 'react-native';
 import Checkbox from '@react-native-community/checkbox';
 import IonIcons from 'react-native-vector-icons/Ionicons'
 import Button from '../../reusables/button';
+import axios from 'axios';
 
 function Register({ navigation }) {
 
     const [showPassword, setShowPassword] = useState(false)
     const [isSelectedTerms, setSelectionTerms] = useState(false);
+    const [formdata, setFormdata] = useState({
+        name: {value: '', isValid: false},
+        mobileNumber: {value: '', isValid: false},
+        password: {value: '', isValid: false},
+        email: {value: '', isValid: false},
+    })
+
+    const handleChange = (field, value) => {
+        const _formdata = {...formdata};
+        _formdata[field].value = value;
+        if(value) {
+            _formdata[field].isValid = true;
+        } else {
+            _formdata[field].isValid = false;
+        }
+        setFormdata({..._formdata})
+    }
+
+    const handleSubmit = async () => {
+        try {
+            const payload = {
+                name: formdata.name.value,
+                mobileNumber: formdata.mobileNumber.value,
+                password: formdata.password.value,
+                email: formdata.email.value
+            };
+            const url = 'http://10.0.2.2:8000/api/register';
+            const {data} = await axios.post(url, payload);
+            if(data) {
+                console.log('data', data);
+                navigation.navigate('otp', {mobileNumber: formdata.mobileNumber.value, provider: 'oauth'});
+            }
+        } catch (error) {
+            const msg = Object.values(error.response.data.error).map(a=> a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning',msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+        
+    }
+
+    const isFormValid = () => {
+        return Object.keys(formdata).every(a=> formdata[a].isValid);
+    }
 
     return (
         <View style={styles.container}>
@@ -21,9 +68,8 @@ function Register({ navigation }) {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Full Name"
-                                keyboardType='number-pad'
-                                // value={query}
-                                // onChangeText={(searchString) => { setQuery(searchString) }}
+                                value={formdata.name.value}
+                                onChangeText={(searchString) => { handleChange('name', searchString) }}
                                 underlineColorAndroid="transparent"
                             />
                         </View>
@@ -34,9 +80,9 @@ function Register({ navigation }) {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Email"
-                                keyboardType='number-pad'
-                                // value={query}
-                                // onChangeText={(searchString) => { setQuery(searchString) }}
+                                keyboardType='email-address'
+                                value={formdata.email.value}
+                                onChangeText={(searchString) => { handleChange('email',searchString) }}
                                 underlineColorAndroid="transparent"
                             />
                         </View>
@@ -48,8 +94,8 @@ function Register({ navigation }) {
                                 style={styles.input}
                                 placeholder="Mobile Number"
                                 keyboardType='number-pad'
-                                // value={query}
-                                // onChangeText={(searchString) => { setQuery(searchString) }}
+                                value={formdata.mobileNumber.value}
+                                onChangeText={(searchString) => { handleChange('mobileNumber',searchString) }}
                                 underlineColorAndroid="transparent"
                             />
                         </View>
@@ -61,9 +107,8 @@ function Register({ navigation }) {
                                 style={styles.input}
                                 placeholder="Password"
                                 secureTextEntry={!showPassword}
-                                // value={"hellow"}
-                                // value={query}
-                                // onChangeText={(searchString) => { setQuery(searchString) }}
+                                value={formdata.password.value}
+                                onChangeText={(searchString) => { handleChange('password',searchString) }}
                                 underlineColorAndroid="transparent"
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -85,7 +130,7 @@ function Register({ navigation }) {
                         </View>
                     </View>
                     <View style={{ marginTop: 15 }}>
-                        <Button label='sign up' type='primary' onPress={() => navigation.navigate('otp')} />
+                        <Button label='sign up' type='primary' onPress={handleSubmit} disabled={!isFormValid()} />
                     </View>
                 </View>
             </ScrollView>

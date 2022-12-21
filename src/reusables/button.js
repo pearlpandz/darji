@@ -3,8 +3,8 @@ import { StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native'
 
 function Button({ type, label, onPress, width, disabled }) {
     return (
-        <TouchableOpacity style={[type ? styles[type] : styles.secondary, {width: width ? width : '100%'}] } onPress={onPress} disabled={disabled}>
-            <Text style={type ? styles[type+'Label'] : styles.secondaryLabel}>{label}</Text>
+        <TouchableOpacity style={[ disabled ? styles.disabled : type ? styles[type] : styles.secondary, {width: width ? width : '100%'}] } onPress={onPress} disabled={disabled}>
+            <Text style={disabled ? styles.disabledLabel : type ? styles[type+'Label'] : styles.secondaryLabel}>{label}</Text>
         </TouchableOpacity>
     )
 }
@@ -45,15 +45,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     disabled: {
-        backgroundColor: '#f4f4f4',
+        backgroundColor: '#cccccc',
         alignItems: 'center',
         paddingVertical: 14,
         borderRadius: 6
     },
     disabledLabel: {
-        color: '#d0d0d0',
+        color: '#666666',
         textTransform: 'uppercase',
-        fontWeight: 'bold'
+        // fontWeight: 'bold'
     }
 })
 

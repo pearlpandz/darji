@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Darji</string>
+    <string name="facebook_app_id">607572014504301</string>
+    <string name="facebook_client_token">733a4cfac5799cb2bcda2cbb6523cb7d</string>
 </resources>

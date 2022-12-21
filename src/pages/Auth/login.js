@@ -1,15 +1,73 @@
 import React, { useState, useContext } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Pressable, TextInput, Dimensions, StatusBar } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, TextInput, Dimensions, StatusBar, LogBox, ToastAndroid, Platform, AlertIOS, Alert } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import IonIcons from 'react-native-vector-icons/Ionicons'
 import Button from '../../reusables/button';
-
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import { AuthContext } from '../../services/context';
+import axios from 'axios';
 
-function Login({navigation}) {
+const ANDROID_CLIENT_ID = "280676335640-s4fv6lmjr0tqlb81thts0lnmct5d9ig6.apps.googleusercontent.com";
+const IOS_CLIENT_ID = "280676335640-bmdv3027s2i362t30arsd17s0k40o9b0.apps.googleusercontent.com";
+LogBox.ignoreLogs(['new NativeEventEmitter']);
 
-    const [showPassword, setShowPassword] = useState(false)
-    const { setAuthStatus } = useContext(AuthContext)
+function Login({ navigation }) {
+
+    const [showPassword, setShowPassword] = useState(false);
+    const { setAuthStatus } = useContext(AuthContext);
+
+
+    const socialRegister = async (payload) => {
+        try {
+            const url = 'http://10.0.2.2:8000/api/register';
+            const { data } = await axios.post(url, payload)
+            if (data) {
+                console.log(data);
+                navigation.navigate('otp', { mobileNumber: null, payload });
+            }
+        } catch (error) {
+            console.log(JSON.stringify(error.response.data));
+            const msg = Object.values(error.response.data.error).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+    }
+
+    const registerByGoogle = (user) => {
+        const { name, email } = user;
+        const payload = { name, email, provide: 'google' };
+        socialRegister(payload);
+    };
+
+    const registerByFacebook = (result) => {
+        const { name, email } = result;
+        const payload = { name, email, provider: 'facebook' };
+        socialRegister(payload);
+    }
+
+    const getInfoFromToken = token => {
+        const PROFILE_REQUEST_PARAMS = {
+            fields: {
+                string: 'id, name,  first_name, last_name, email',
+            },
+        };
+        const profileRequest = new GraphRequest(
+            '/me',
+            { token, parameters: PROFILE_REQUEST_PARAMS },
+            (error, result) => {
+                if (error) {
+                    console.log('login info has error: ' + JSON.stringify(error));
+                } else {
+                    registerByFacebook(result);
+                }
+            },
+        );
+        new GraphRequestManager().addRequest(profileRequest).start();
+    };
 
     return (
         <View style={[styles.container]}>
@@ -66,12 +124,46 @@ function Login({navigation}) {
                     {/* social login */}
                     <View style={{ flexDirection: 'row' }}>
                         <View style={styles.googleBtn}>
-                            <Pressable onPress={() => navigation.navigate('otp')}>
+                            <Pressable onPress={() => {
+                                GoogleSignin.configure({
+                                    androidClientId: ANDROID_CLIENT_ID,
+                                    iosClientId: IOS_CLIENT_ID,
+                                });
+                                GoogleSignin.hasPlayServices().then((hasPlayService) => {
+                                    if (hasPlayService) {
+                                        GoogleSignin.signIn().then(({ user }) => {
+                                            registerByGoogle(user)
+                                        }).catch((e) => {
+                                            console.log("ERROR IS: " + JSON.stringify(e));
+                                        })
+                                    }
+                                }).catch((e) => {
+                                    console.log("ERROR IS: " + JSON.stringify(e));
+                                })
+                                // navigation.navigate('otp')
+                            }}>
                                 <IonIcons name="logo-google" color='#1f212a' size={20} style={{ marginRight: 10 }} />
                             </Pressable>
                         </View>
                         <View style={styles.fbBtn}>
-                            <Pressable onPress={() => navigation.navigate('otp')}>
+                            <Pressable onPress={() => {
+                                LoginManager.logInWithPermissions(['public_profile', 'email']).then(
+                                    login => {
+                                        if (login.isCancelled) {
+                                            console.log('Login cancelled');
+                                        } else {
+                                            AccessToken.getCurrentAccessToken().then(data => {
+                                                const accessToken = data.accessToken.toString();
+                                                getInfoFromToken(accessToken);
+                                            });
+                                        }
+                                    },
+                                    error => {
+                                        console.log('Login fail with error: ' + error);
+                                    },
+                                );
+                                // navigation.navigate('otp')
+                            }}>
                                 <IonIcons name="logo-facebook" color='#fff' size={20} style={{ marginRight: 10 }} />
                             </Pressable>
                         </View>
@@ -113,7 +205,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 15,
         marginRight: 0,
-        width: (Dimensions.get('screen').width - 30) / 2
+        width: (Dimensions.get('screen').width - 30) / 2,
     },
     googleBtn: {
         backgroundColor: '#fff',
