@@ -16,19 +16,36 @@ function Login({ navigation }) {
 
     const [showPassword, setShowPassword] = useState(false);
     const { setAuthStatus } = useContext(AuthContext);
+    const [formdata, setFormdata] = useState({
+        mobileNumber: { value: '', isValid: false },
+        password: { value: '', isValid: false },
+    })
 
+    const handleChange = (field, value) => {
+        const _formdata = { ...formdata };
+        _formdata[field].value = value;
+        if (value) {
+            _formdata[field].isValid = true;
+        } else {
+            _formdata[field].isValid = false;
+        }
+        setFormdata({ ..._formdata })
+    }
 
-    const socialRegister = async (payload) => {
+    const socialLogin = async (payload) => {
         try {
-            const url = 'http://10.0.2.2:8000/api/register';
+            const url = 'http://10.0.2.2:8000/api/socialLogin';
+            console.log('--------------social login------------')
+            console.log(payload);
             const { data } = await axios.post(url, payload)
             if (data) {
-                console.log(data);
-                navigation.navigate('otp', { mobileNumber: null, payload });
+                setAuthStatus(true);
+                await AsyncStorage.setItem('isAuthenticated', String(true));
+                ToastAndroid.show("Successfully Loggedin!", ToastAndroid.SHORT);
             }
         } catch (error) {
-            console.log(JSON.stringify(error.response.data));
-            const msg = Object.values(error.response.data.error).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            console.log(error.response.data);
+            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
             if (Platform.OS === 'android') {
                 Alert.alert('Warning', msg);
             } else {
@@ -39,14 +56,14 @@ function Login({ navigation }) {
 
     const registerByGoogle = (user) => {
         const { name, email } = user;
-        const payload = { name, email, provide: 'google' };
-        socialRegister(payload);
+        const payload = { name, email, provider: 'google' };
+        socialLogin(payload);
     };
 
     const registerByFacebook = (result) => {
         const { name, email } = result;
         const payload = { name, email, provider: 'facebook' };
-        socialRegister(payload);
+        socialLogin(payload);
     }
 
     const getInfoFromToken = token => {
@@ -69,6 +86,36 @@ function Login({ navigation }) {
         new GraphRequestManager().addRequest(profileRequest).start();
     };
 
+    const simpleLogin = async () => {
+        try {
+            const url = 'http://10.0.2.2:8000/api/login';
+            const payload = {
+                mobileNumber: formdata.mobileNumber.value,
+                password: formdata.password.value
+            }
+            console.log(payload)
+            const { data } = await axios.post(url, payload)
+            if (data) {
+                console.log(data);
+                setAuthStatus(true);
+                await AsyncStorage.setItem('isAuthenticated', String(true));
+                ToastAndroid.show("Successfully LoggedIn!", ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.log(error.response.data);
+            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+    }
+
+    const isFormValid = () => {
+        return Object.keys(formdata).every(a => formdata[a].isValid);
+    }
+
     return (
         <View style={[styles.container]}>
             <View>
@@ -81,8 +128,8 @@ function Login({ navigation }) {
                                 style={styles.input}
                                 placeholder="Mobile Number"
                                 keyboardType='number-pad'
-                                // value={query}
-                                // onChangeText={(searchString) => { setQuery(searchString) }}
+                                value={formdata.mobileNumber.value}
+                                onChangeText={(searchString) => { handleChange('mobileNumber', searchString) }}
                                 underlineColorAndroid="transparent"
                             />
                         </View>
@@ -92,9 +139,8 @@ function Login({ navigation }) {
                                 style={styles.input}
                                 placeholder="Password"
                                 secureTextEntry={!showPassword}
-                                // value={"hellow"}
-                                // value={query}
-                                // onChangeText={(searchString) => { setQuery(searchString) }}
+                                value={formdata.password.value}
+                                onChangeText={(searchString) => { handleChange('password', searchString) }}
                                 underlineColorAndroid="transparent"
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -106,10 +152,7 @@ function Login({ navigation }) {
                             </TouchableOpacity>
                         </View>
                         <View style={{ marginTop: 15 }}>
-                            <Button label='sign in' type='primary' onPress={async () => {
-                                setAuthStatus(true);
-                                await AsyncStorage.setItem('isAuthenticated', String(true));
-                            }} />
+                            <Button label='sign in' type='primary' onPress={async () => simpleLogin()} disabled={!isFormValid()} />
                         </View>
                         <TouchableOpacity onPress={() => navigation.navigate('forgetpassword')}>
                             <Text style={{ textTransform: 'capitalize', textAlign: 'right', marginVertical: 15, color: '#e8875b' }}>forget your password?</Text>

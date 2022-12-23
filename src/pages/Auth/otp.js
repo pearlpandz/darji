@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Pressable, TextInput, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, TextInput, Dimensions, Platform, AlertIOS, Alert, ToastAndroid } from 'react-native'
 
 // third-party
 import OTPInputView from '@twotalltotems/react-native-otp-input'
@@ -9,21 +9,100 @@ import { AuthContext } from '../../services/context';
 import Button from '../../reusables/button';
 
 import IonIcons from 'react-native-vector-icons/Ionicons'
+import axios from 'axios';
 
 
 function OtpValidation({ route, navigation }) {
     const { mobileNumber, payload } = route.params;
+    const userId = payload.id;
+    const _otp = payload.otp;
+    const provider = payload.provider;
     const [showPassword, setShowPassword] = useState(false)
     const [mobile, setMobileNumber] = useState(false)
+    const [otp, setOtp] = useState()
+    const [enteredOtp, setEnteredOtp] = useState()
     const { setAuthStatus } = useContext(AuthContext)
 
-    // if payload?.provider is oauth then redirect to login page
-    // if payload?.provider is facebook or google then call login api then allow to homepage
+    
+
+    const getOtp = async () => {
+        try {
+            console.log(userId, mobile);
+            const url = `http://10.0.2.2:8000/api/getOtp/${userId}`;
+            const payload = { mobileNumber: mobile };
+            const { data } = await axios.put(url, payload);
+            if (data) {
+                console.log('--------------otp-----------------')
+                console.log(data.otp);
+                if (data.otp) {
+                    setOtp(data.otp)
+                }
+            }
+        } catch (error) {
+            console.log(JSON.stringify(error.response.data));
+            const msg = Object.values(error.response.data.error).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+    }
+
+    const verifyMobileNumber = async () => {
+        try {
+            let isOtpMatched = false;
+            if (_otp == enteredOtp) {
+                isOtpMatched = true;
+            } else if (otp == enteredOtp) {
+                isOtpMatched = true;
+            }
+            console.log("isOtpMatched",isOtpMatched);
+            if (isOtpMatched) {
+                console.log('-------------- otp matched -----------------')
+                const url = 'http://10.0.2.2:8000/api/verifyMobileNumber';
+                const payload = { mobileNumber: mobile, isOtpMatched: true };
+                const { data } = await axios.put(url, payload);
+                console.log(data);
+                if (data) {
+                    console.log('-------------- otp verified -----------------')
+                    
+                    
+                    if(provider === 'oauth') {
+                        // if payload?.provider is oauth then redirect to login page
+                        ToastAndroid.show("Mobile Number verified, Please login now!", ToastAndroid.SHORT);
+                        navigation.navigate('authindex', {initialIndex: 0})
+                    } else {
+                        // if payload?.provider is facebook or google then call login api then allow to homepage
+                        setAuthStatus(true);
+                        await AsyncStorage.setItem('isAuthenticated', String(true));
+                        ToastAndroid.show("Mobile Number verified!", ToastAndroid.SHORT);
+                    }
+                }
+            } else {
+                const msg = 'Otp is not correct!';
+                if (Platform.OS === 'android') {
+                    Alert.alert('Warning', msg);
+                } else {
+                    AlertIOS.alert(msg);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            console.log(JSON.stringify(error))
+            const msg = error?.response?.data ? Object.values(error.response.data.error).map(a => a.toString()).join(', ') : 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+    }
 
     return (
         <View style={styles.container}>
             {
-                mobileNumber ?
+                (_otp || otp) ?
                     <View style={{ paddingVertical: 15, paddingHorizontal: 10 }}>
                         <Text style={{
                             textTransform: 'uppercase',
@@ -34,9 +113,8 @@ function OtpValidation({ route, navigation }) {
                         }}>enter 6-digit code</Text>
                         <Text style={{
                             color: '#585758',
-
-                        }}>We have sent a code to <Text style={{ fontWeight: 'bold' }}>{mobileNumber},</Text></Text>
-                        <Text style={{ marginTop: 5, color: '#585758', }}>Enter the code please.</Text>
+                        }}>We have sent a code to <Text style={{ fontWeight: 'bold' }}>{mobileNumber || mobile},</Text></Text>
+                        <Text style={{ marginTop: 5, color: '#585758', }}>Enter the code please. ({otp || _otp})</Text>
 
                         <View style={{ alignItems: 'center', marginVertical: 25 }}>
                             <OTPInputView
@@ -47,6 +125,7 @@ function OtpValidation({ route, navigation }) {
                                 codeInputHighlightStyle={styles.underlineStyleHighLighted}
                                 placeholderTextColor="red"
                                 onCodeFilled={(code => {
+                                    setEnteredOtp(code);
                                     console.log(`Code is ${code}, you are good to go!`)
                                 })}
                             />
@@ -55,15 +134,16 @@ function OtpValidation({ route, navigation }) {
                         <View style={[styles.btnContainer]}>
                             {/* <Button label='cancel' type='secondary' onPress={() => navigation.goBack()} width={150} /> */}
                             <Button label='verify' type='primary' onPress={async () => {
-                                setAuthStatus(true);
-                                await AsyncStorage.setItem('isAuthenticated', String(true));
+                                verifyMobileNumber();
                             }} />
                         </View>
 
                         <View style={{ alignItems: 'center' }}>
                             <Button type='disabled' label="Resend code in 00:39" width={'auto'} />
                             <View style={{ marginVertical: 10 }} />
-                            <Button type='primaryoutline' label="Resend Code" width={'auto'} />
+                            <Button type='primaryoutline' label="Resend Code" width={'auto'} onPress={() => {
+                                console.log('get the otp again....')
+                            }} />
                         </View>
                     </View> :
                     <View style={{ paddingVertical: 15, paddingHorizontal: 10 }}>
@@ -80,7 +160,7 @@ function OtpValidation({ route, navigation }) {
                             />
                         </View>
                         <View style={{ alignItems: 'center' }}>
-                            <Button type='primary' label="get otp" width={120} />
+                            <Button type='primary' label="get otp" width={120} disabled={!mobile} onPress={() => getOtp()} />
                         </View>
                     </View>
             }

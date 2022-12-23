@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo, useEffect} from 'react';
 
 import {
   SafeAreaView,
@@ -7,12 +7,23 @@ import {
   StatusBar,
   Image} from 'react-native';
 import Navigation from '../../reusables/navigation';
-import TabView from './tab';
+import TabPageView from './tab';
 import Background from './../../assets/images/background.png'
 import Logo from './../../assets/logo.png'
 
+const AuthenticationPage = ({ navigation, route }) => {
+  const [index, setIndex] = React.useState(route.params?.initialIndex || 0);
 
-const AuthenticationPage = ({ navigation }) => {
+  const tabView = useMemo(() => (
+    <TabPageView navigation={navigation} index={index} setIndex={setIndex} />
+  ), [index])
+
+  useEffect(() => {
+    if(route.params?.initialIndex) {
+      setIndex(route.params?.initialIndex)
+    }
+  }, [route.params])
+  
   return (
     <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, backgroundColor: '#fff' }}>
       {/* <ScrollView stickyHeaderIndices={[1]} showsVerticalScrollIndicator={false}> */}
@@ -21,7 +32,7 @@ const AuthenticationPage = ({ navigation }) => {
             <Image style={styles.backgroundImage} source={Background} />
           </View>
           <View style={{ flex: 1, position: 'relative', top: -44 }}>
-            <TabView navigation={navigation} />
+            {tabView}
           </View>
       {/* </ScrollView> */}
     </SafeAreaView>

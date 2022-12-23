@@ -4,10 +4,10 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 import Login from './login';
 import Register from './register';
 
-export default function TabPageView({navigation}) {
+export default function TabPageView({ navigation, index, setIndex }) {
     const layout = useWindowDimensions();
 
-    const [index, setIndex] = React.useState(0);
+
     const [routes] = React.useState([
         { key: 'signin', title: 'Sign In' },
         { key: 'signup', title: 'Sign Up' }
@@ -18,7 +18,7 @@ export default function TabPageView({navigation}) {
             {type === 'signin' ? <Login navigation={navigation} /> : <Register navigation={navigation} />}
         </ScrollView>
     };
-    
+
     const renderScene = SceneMap({
         signin: () => <Route type='signin' />,
         signup: () => <Route type='signup' />,
@@ -50,7 +50,7 @@ export default function TabPageView({navigation}) {
         );
     };
 
-    return (
+    const tabViewMemo = React.useMemo(() => (
         <TabView
             navigationState={{ index, routes }}
             renderScene={renderScene}
@@ -59,6 +59,12 @@ export default function TabPageView({navigation}) {
             initialLayout={{ width: layout.width }}
             swipeEnabled={true}
         />
+    ), [index])
+
+    return (
+        <>
+            {tabViewMemo}
+        </>
     );
 }
 
