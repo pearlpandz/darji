@@ -2,7 +2,8 @@ import React from 'react';
 import { Text, View, SafeAreaView, ScrollView, StatusBar, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-function SuccessMeasurement({navigation}) {
+function SuccessMeasurement({navigation, route}) {
+    const {orderId} = route.params;
     return (
         <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, backgroundColor: '#D97D54' }}>
             <ScrollView>
@@ -21,7 +22,7 @@ function SuccessMeasurement({navigation}) {
                         <Text style={{fontSize: 26, color: '#FCC3A9'}}>into a <Text style={{color: '#fff', fontStyle: 'italic'}}>Masterpiece</Text></Text>
                     </View>
                     <Text style={{ fontSize: 18, color: '#fff', textAlign: 'center', marginTop: 25, maxWidth: 260 }}>Do you want to go-ahead for cloth selection?</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('clothcategory')} style={{ backgroundColor: '#fff', width: 150, height: 45, borderRadius: 25, alignItems: 'center', justifyContent: 'center', marginTop: 30 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('clothcategory', {orderId: orderId})} style={{ backgroundColor: '#fff', width: 150, height: 45, borderRadius: 25, alignItems: 'center', justifyContent: 'center', marginTop: 30 }}>
                         <Text style={{ textTransform: 'uppercase', color: '#324755', fontWeight: 'bold', }}>yes</Text>
                     </TouchableOpacity>
                 </View>

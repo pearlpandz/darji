@@ -1,27 +1,61 @@
 import React, { useState } from 'react'
-import { View, Text, SafeAreaView, StatusBar, ScrollView, StyleSheet, Image, Dimensions, TextInput } from 'react-native'
+import { View, Text, SafeAreaView, StatusBar, ScrollView, StyleSheet, Image, Dimensions, TextInput, Platform, Alert, AlertIOS } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Shirt from '../../../reusables/customization/shirt';
 import AttributeView from './attributeView';
 import Button from '../../../reusables/button';
 
 import Cloth from './../../../assets/images/cloth.jpg';
+import axios from 'axios';
+import { HOST } from '../../../../env';
 
-function Summary({navigation}) {
-
-    const config = { size: 42, shoulder: 'average', fit: 'super slim', bodyType: 'athletic', height: "5'2", notes: "Linen fabric is exceptionally breathable and absorbent, making it a great summer fabric. It is also skin-friendly as it is made entirely of natural fibers" };
+function Summary({ navigation, route }) {
+    const { id, measurements, cloth_length, cloth_total_price, cloth_name, measurementAddress, cloth_pickuplocation, cloth_couriered } = route.params;
+    const config = { ...measurements };
     const selectedCloth = {
-        name: 'linen blue',
-        size: 5,
-        price: 50 // price for 1mtr
+        name: cloth_name,
+        size: cloth_length,
+        price: cloth_total_price
     };
 
     const [address, setAddress] = useState('');
 
+    const updateDeliveryAddress = async (isDraft) => {
+        try {
+            const url = `${HOST}/api/updateOrder/${id}`;
+            const payload = {
+                deliveryAddress: address,
+                orderStatus: isDraft ? 'draft' : 'complete',
+                orderDeliveryStatus: 'pending',
+                orderPaymentStatus: 'pending'
+            }
+            console.log(payload);
+            const { data } = await axios.put(url, payload, { withCredentials: true })
+            if (data) {
+                console.log(data);
+                if (!isDraft) {
+                    navigation.navigate('finalquote', {
+                        ...route.params
+                    })
+                } else {
+                    console.log('redirect to orders list page');
+                }
+            }
+        } catch (error) {
+            console.log(error.response.data);
+            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, backgroundColor: '#87BCBF' }}>
             <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={false}>
-                <View style={{ marginBottom: 20, backgroundColor: '#87BCBF'}}>
+                <View style={{ marginBottom: 20, backgroundColor: '#87BCBF' }}>
                     <View style={[styles.horizontalAlign]}>
                         <Ionicons name='chevron-back' size={22} color="#fff" onPress={() => navigation.goBack()} />
                         <Text style={{ color: '#fff', fontSize: 16, fontWeight: '500' }}>Summary</Text>
@@ -32,32 +66,60 @@ function Summary({navigation}) {
                     <Shirt config={config} />
                 </View>
 
+
+
                 <View style={styles.detailContainer}>
-                    <Text style={styles.title}>give measurements</Text>
+                    {measurements ?
+                        <>
+                            <Text style={styles.title}>give measurements</Text>
+                            <View style={styles.measurements}>
+                                <View style={styles.measurement}><AttributeView label="Body Type" value={config.bodyType} /></View>
+                                <View style={[styles.measurement, { marginRight: 0 }]}><AttributeView label="Shirt Size" value={config.shirtSize} /></View>
+                                <View style={styles.measurement}><AttributeView label="Shoulder Type" value={config.shoulderType} /></View>
+                                <View style={[styles.measurement, { marginRight: 0 }]}><AttributeView label="Height" value={config.height} /></View>
+                                <View style={styles.measurement}><AttributeView label="Preferred Fit" value={config.fit} /></View>
+                            </View>
 
-                    <View style={styles.measurements}>
-                        <View style={styles.measurement}><AttributeView label="Body Type" value={config.bodyType} /></View>
-                        <View style={[styles.measurement, { marginRight: 0 }]}><AttributeView label="Shirt Size" value={config.size} /></View>
-                        <View style={styles.measurement}><AttributeView label="Shoulder Type" value={config.shoulder} /></View>
-                        <View style={[styles.measurement, { marginRight: 0 }]}><AttributeView label="Height" value={config.height} /></View>
-                        <View style={styles.measurement}><AttributeView label="Preferred Fit" value={config.fit} /></View>
-                    </View>
-
-                    <View>
-                        <Text style={styles.label}>Notes / Instructions</Text>
-                        <Text style={styles.value}>{config.notes}</Text>
-                    </View>
+                            <View>
+                                <Text style={styles.label}>Notes / Instructions</Text>
+                                <Text style={styles.value}>{config.notes}</Text>
+                            </View>
+                        </>
+                        :
+                        <View>
+                            <Text>Measurements will collect from: <Text style={{ fontWeight: '500' }}>{measurementAddress}</Text></Text>
+                        </View>
+                    }
                 </View>
 
                 <View style={styles.titleCard}>
-                    <View style={styles.iconContainer}>
-                        <Image source={Cloth} style={{ flex: 1, width: '100%' }} />
-                    </View>
-                    <View>
-                        <Text style={styles.clothName}>{selectedCloth.name}</Text>
-                        <View style={styles.hr} />
-                        <Text style={styles.price}>{selectedCloth.size} mtr ................. Rs.{selectedCloth.size * selectedCloth.price}</Text>
-                    </View>
+                    {
+                        selectedCloth.name ?
+                            <>
+                                <View style={styles.iconContainer}>
+                                    <Image source={Cloth} style={{ flex: 1, width: '100%' }} />
+                                </View>
+                                <View>
+                                    <Text style={styles.clothName}>{selectedCloth.name}</Text>
+                                    <View style={styles.hr} />
+                                    <Text style={styles.price}>{selectedCloth.size} mtr ................. Rs.{selectedCloth.price}</Text>
+                                </View>
+                            </> :
+                            cloth_couriered ?
+                                <View>
+                                    <Text style={{ fontWeight: '500', fontSize: 15, marginBottom: 15, color: '#fff' }}>Cloth will be couriered to the below mentioned address (Our Office Address)</Text>
+                                    <Text style={{color: '#fff'}}>3/235</Text>
+                                    <Text style={{color: '#fff'}}>test street,</Text>
+                                    <Text style={{color: '#fff'}}>area</Text>
+                                    <Text style={{color: '#fff'}}>district</Text>
+                                    <Text style={{color: '#fff'}}>state</Text>
+                                    <Text style={{color: '#fff'}}>PIN: 000 000</Text>
+                                </View> :
+                                <View>
+                                    <Text style={{ color: '#fff' }}>Cloth will pick up from: <Text style={{ fontWeight: '500' }}>{cloth_pickuplocation}</Text></Text>
+                                </View>
+                    }
+
                 </View>
 
                 <View style={[styles.addressSection, { paddingBottom: 0 }]}>
@@ -75,11 +137,16 @@ function Summary({navigation}) {
                 </View>
 
                 <View style={[styles.addressSection, { justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', paddingTop: 0 }]}>
-                    <Button type="primaryoutline" label="save for later" width={(Dimensions.get('window').width - 50) / 2} />
-                    <Button type="primary" label="checkout" width={(Dimensions.get('window').width - 50) / 2} onPress={() => navigation.navigate('finalquote')} />
+                    <Button type="primaryoutline" label="save for later" width={(Dimensions.get('window').width - 50) / 2}
+                        disabled={!address}
+                        onPress={() => updateDeliveryAddress(true)}
+                    />
+                    <Button type="primary" label="continue to checkout" width={(Dimensions.get('window').width - 50) / 2}
+                        disabled={!address}
+                        onPress={() => updateDeliveryAddress()} />
                 </View>
-            </ScrollView>
-        </SafeAreaView>
+            </ScrollView >
+        </SafeAreaView >
     )
 }
 

@@ -1,5 +1,5 @@
-import React, {useMemo, useState} from 'react'
-import { SafeAreaView, StatusBar, Text, View, StyleSheet, ScrollView, Dimensions, Image, TextInput, Pressable } from 'react-native'
+import React, { useCallback, useMemo, useState, useEffect } from 'react'
+import { SafeAreaView, StatusBar, Text, View, StyleSheet, ScrollView, Dimensions, Image, TextInput, Pressable, Platform, Alert, AlertIOS } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Modal from 'react-native-modal';
 
@@ -10,42 +10,46 @@ import MEN_IMAGE from './../../../assets/images/men.png';
 import WOMEN_IMAGE from './../../../assets/images/women.jpg';
 import AVATAR from './../../../assets/images/avatar.png';
 import GET_A_QUOTE from './../../../assets/images/getquote.png';
+import axios from 'axios';
+import { HOST } from '../../../../env';
 
 function CartPage({ navigation }) {
     const ACTIONITEMS = [
         {
             id: 1,
-            label: 'Saved',
-            value: 'saved',
+            label: 'Draft',
+            value: 'orderStatus.draft',
 
         },
         {
             id: 2,
-            label: 'Inprogress',
-            value: 'inprogress',
+            label: 'Payment Pending',
+            value: 'orderPaymentStatus.pending',
 
         },
         {
             id: 3,
-            label: 'Cancelled',
-            value: 'cancelled',
+            label: 'Partially Paid',
+            value: 'orderPaymentStatus.partial',
 
         },
         {
             id: 4,
-            label: 'Completed',
-            value: 'completed',
+            label: 'Delivery Pending',
+            value: 'orderDeliveryStatus.pending',
 
         },
         {
             id: 5,
-            label: 'Returned',
-            value: 'returned',
+            label: 'Delivered',
+            value: 'orderDeliveryStatus.complete',
 
         }
     ];
     const [selectedType, setType] = useState()
     const [actionSheet, setActionSheet] = useState(false);
+    const [orders, setOrders] = useState([]);
+    const [orderId, setOrderid] = useState();
     const ActionSheetModal = useMemo(() => (
         <Modal
             isVisible={actionSheet}
@@ -65,6 +69,69 @@ function CartPage({ navigation }) {
         </Modal>
     ), [actionSheet])
 
+    const resultView = useMemo(() => {
+        let orderList = [...orders];
+        if (orderId) {
+            orderList = orderList.filter(a => String(a.id).includes(orderId));
+        }
+        if (selectedType) {
+            const field = selectedType.split('.');
+            orderList = orderList.filter(a => a[field[0]] === field[1]);
+        }
+        return (
+            <>
+                {
+                    orderList.length > 0 ?
+                        orderList.map((item, key) => (
+                            <View style={[styles.cardContainer, styles.boxWithShadow]} key={key}>
+                                <View style={{ flexDirection: 'row', alignContent: 'center' }}>
+                                    <Image source={MEN_IMAGE} style={styles.imageView} />
+                                    <View style={{ position: 'relative' }}>
+                                        <Text style={{ fontWeight: 'bold', color: '#324755', fontSize: 15, textTransform: 'capitalize' }}>{item.orderType}</Text>
+                                        <Text style={{ fontSize: 12, color: '#324755', fontWeight: '300', marginTop: 5 }}>ID: {item.id}</Text>
+                                        <Text style={{ fontSize: 12, color: '#324755', fontWeight: '300', marginTop: 5 }}>{item.orderDate}</Text>
+                                    </View>
+                                </View>
+                                <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+                                    <Text style={{ fontWeight: 'bold', fontSize: 15, marginBottom: 10 }}>Rs.{item.totalPrice - item.alreadyPaid}</Text>
+                                    <Text style={{ fontSize: 13, marginBottom: 10, textDecorationLine: 'line-through' }}>Rs.{item.alreadyPaid}</Text>
+                                    {/* <Text style={styles.saved}>{item.orderDeliveryStatus}</Text> */}
+                                </View>
+                            </View>
+                        )) :
+                        <View style={[styles.cardContainer, styles.boxWithShadow, { height: 100, alignItems: 'center', justifyContent: 'center' }]}>
+                            <Text>No orders found</Text>
+                        </View>
+                }
+            </>
+        )
+    }, [selectedType, orderId, orders]);
+
+    const getOrders = async () => {
+        try {
+            const url = `${HOST}/api/orders`;
+            const { data } = await axios.get(url, { withCredentials: true });
+            if (data) {
+                setOrders(data);
+            }
+        } catch (error) {
+            console.log(error.response.data);
+            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+    };
+
+
+
+    useEffect(() => {
+        getOrders()
+    }, [])
+
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f7f7f7' }}>
             <ScrollView style={{ flex: 1 }}>
@@ -73,34 +140,19 @@ function CartPage({ navigation }) {
                         style={styles.input}
                         placeholder="Enter Order ID"
                         underlineColorAndroid="transparent"
+                        value={orderId}
+                        onChangeText={(id) => { setOrderid(id) }}
                     />
-                    <Pressable onPress={() => setActionSheet(true)} 
+                    <Pressable onPress={() => setActionSheet(true)}
                         style={[styles.select, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                        <Text style={{color: '#324755'}}>
+                        <Text style={{ color: '#324755' }}>
                             {ACTIONITEMS.find(a => a.value === selectedType)?.label}
                         </Text>
                         <Ionicons name="chevron-down" size={14} color='#000' />
                     </Pressable>
                 </View>
                 <View style={styles.cardView}>
-                    {
-                        [...new Array(15)].map((item, key) => (
-                            <View style={[styles.cardContainer, styles.boxWithShadow]} key={key}>
-                                <View style={{ flexDirection: 'row', alignContent: 'center' }}>
-                                    <Image source={MEN_IMAGE} style={styles.imageView} />
-                                    <View style={{ position: 'relative' }}>
-                                        <Text style={{ fontWeight: 'bold', color: '#324755', fontSize: 15 }}>Full Sleeve Shirt</Text>
-                                        <Text style={{ fontSize: 12, color: '#324755', fontWeight: '300', marginTop: 5 }}>ID: 56153439</Text>
-                                        <Text style={{ fontSize: 12, color: '#324755', fontWeight: '300', marginTop: 5 }}>25-03-2022</Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
-                                    <Text style={{ fontWeight: 'bold', fontSize: 15, marginBottom: 10 }}>1200 rs</Text>
-                                    <Text style={styles.saved}>Saved</Text>
-                                </View>
-                            </View>
-                        ))
-                    }
+                    {resultView}
                 </View>
             </ScrollView>
             {ActionSheetModal}
@@ -230,14 +282,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 10,
         padding: 10,
-        width: '48%'
+        width: '48%',
+        height: 42
     },
     select: {
         backgroundColor: '#fff',
         borderRadius: 10,
-        paddingVertical: 15,
+        paddingVertical: 5,
         paddingHorizontal: 10,
+        alignItems: 'center',
         width: '48%',
+        height: 42
     },
     blog: {
         backgroundColor: '#fff',
@@ -266,7 +321,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         borderRadius: 4,
         paddingVertical: 3,
-        paddingHorizontal: 15
+        paddingHorizontal: 15,
+        textTransform: 'capitalize'
     }
 })
 

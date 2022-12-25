@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { ScrollView, StyleSheet, Text, View, Image, FlatList, Pressable, Dimensions, TouchableOpacity } from 'react-native'
+import { ScrollView, StyleSheet, Text, View, Image, FlatList, Pressable, Dimensions, TouchableOpacity, Alert, AlertIOS, ToastAndroid, } from 'react-native'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -9,12 +9,17 @@ import ValidatePinCode from './validatePincode';
 import BottomBG from './../../../assets/images/bottom-bg-2.png';
 import Icon4 from './../../../assets/icons/icon-4.png';
 import Icon5 from './../../../assets/icons/icon-5.png';
+import axios from 'axios';
+import { HOST } from '../../../../env';
+import Address from './address';
 
-function UploadReference() {
-
+function UploadReference({ orderData }) {
+    const { orderId, title, gender, designType } = orderData;
     const navigation = useNavigation();
     const [imageList, setImageList] = useState([]);
+    const [hasUploaded, setUploaded] = useState(false);
     const [actionSheet, setActionSheet] = useState(false);
+    const [collectMeasureActionSheet, setMeasureActionSheet] = useState(false);
     const [pin, setPin] = useState()
 
     const handleFileUpload = () => {
@@ -25,15 +30,97 @@ function UploadReference() {
         // }, setResponse)
 
         launchImageLibrary({
-            selectionLimit: 0,
-            mediaType: 'photo',
-            includeBase64: false,
+            // selectionLimit: 0,
+            // mediaType: 'photo',
+            // includeBase64: false,
+            noData: true
         }, ({ assets }) => {
             if (assets) {
                 setImageList([...imageList, ...assets])
             }
         })
     }
+
+    const handleImgUpload = async () => {
+        try {
+            const formdata = new FormData();
+            await Promise.all(imageList.map((item, index) => {
+                console.log('reference', item);
+                formdata.append('reference', {
+                    uri: item.uri,
+                    type: item.type,
+                    name: item.fileName
+                });
+            }));
+            const payload = { reference: imageList }
+            const url = `${HOST}/api/orderReferenceImage/${orderId}`;
+            console.log(url);
+            const { data } = await axios.post(url, formdata, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            if (data) {
+                console.log(data);
+                setImageList([])
+                setUploaded(true)
+            }
+        } catch (error) {
+            console.log(error);
+            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+    }
+
+    const updateMeasurementAddress = async (address) => {
+        try {
+            const payload = {
+                measurementAddress: address
+            };
+            const url = `${HOST}/api/updateOrder/${orderId}`;
+            const { data } = await axios.put(url, payload, { withCredentials: true });
+            if (data) {
+                console.log(data);
+                navigation.navigate('Common', {
+                    screen: 'clothcategory',
+                    params: { orderId }
+                })
+            }
+        } catch (error) {
+            console.log(error);
+            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+
+
+    }
+
+    const CollectMeasuremntAddressModal = useMemo(() => (
+        <Modal
+            isVisible={collectMeasureActionSheet}
+            style={{
+                margin: 0,
+                justifyContent: 'flex-end',
+            }}>
+            <View>
+                <Address setActionSheet={setMeasureActionSheet} setAddress={(address) => {
+                    const _address = `${address.fullAddress}${address.floor ? ', ' + address.floor : ''}${address.landmark ? ', ' + address.landmark : ''}`;
+                    console.log(_address);
+                    updateMeasurementAddress(_address);
+                }} />
+            </View>
+        </Modal>
+    ), [collectMeasureActionSheet])
+
 
     const ActionSheetModal = useMemo(() => (
         <Modal
@@ -43,16 +130,19 @@ function UploadReference() {
                 justifyContent: 'flex-end',
             }}>
             <View>
-                <ValidatePinCode setActionSheet={setActionSheet} setPin={setPin} pin={pin} />
+                <ValidatePinCode setActionSheet={(bool) => {
+                    setActionSheet(bool);
+                    setPin();
+                }} setPin={setPin} pin={pin} />
             </View>
         </Modal>
-    ), [actionSheet])
+    ), [actionSheet, pin])
 
     return (
         <ScrollView style={{ color: '#fff' }}>
             <View style={styles.imageContainer}>
                 <Text style={styles.title}>upload reference images</Text>
-                <View style={[styles.images, { alignItems: 'center', justifyContent: 'center', borderRadius: 20, borderColor: '#fff', borderWidth: 1 }]}>
+                <Pressable onPress={handleFileUpload} style={[styles.images, { alignItems: 'center', justifyContent: 'center', borderRadius: 20, borderColor: '#fff', borderWidth: 1 }]}>
                     {imageList.length > 0 &&
                         <View style={{ overflow: 'hidden', borderRadius: 20, backgroundColor: '' }}>
                             <FlatList
@@ -77,14 +167,17 @@ function UploadReference() {
                     }
                     {/* {imageList.length === 0 && <Text style={{color: '#fff'}}>Placeholder</Text>} */}
                     {imageList.length > 0 && <Text style={styles.imgCount}>{imageList.length}</Text>}
-                </View>
+                </Pressable>
 
                 {/* <Button label="upload images" type="primaryoutline" onPress={handleFileUpload} /> */}
-                <View style={{ paddingHorizontal: 20 }}>
-                    <Pressable onPress={handleFileUpload} style={{ borderColor: '#87BCBF', borderWidth: 1, borderRadius: 20 }}>
+                {imageList.length > 0 && <View style={{ paddingHorizontal: 20 }}>
+                    <Pressable
+                        onPress={handleImgUpload}
+                        style={{ borderColor: '#87BCBF', borderWidth: 1, borderRadius: 20 }}
+                        disabled={imageList.length === 0} >
                         <Text style={{ textAlign: 'center', color: '#fff', padding: 12, fontSize: 14, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 0.8 }}>upload images</Text>
                     </Pressable>
-                </View>
+                </View>}
             </View>
 
             <View style={{ paddingHorizontal: 20, position: 'relative' }}>
@@ -96,9 +189,18 @@ function UploadReference() {
                                     <Image source={Icon4} style={{ flex: 1 }} resizeMode="contain" />
                                 </View>
                                 <View style={{ width: Dimensions.get('screen').width - 180 }}>
-                                    <TouchableOpacity onPress={() => navigation.navigate('Common', {
-                                        screen: 'measurement'
-                                    })}>
+                                    <TouchableOpacity onPress={() => {
+                                        if (!hasUploaded) {
+                                            ToastAndroid.show("Upload Reference Images, then continue to submit measurements!", ToastAndroid.SHORT);
+                                        } else {
+                                            navigation.navigate('Common', {
+                                                screen: 'measurement',
+                                                params: {
+                                                    orderId: orderId
+                                                }
+                                            })
+                                        }
+                                    }}>
                                         <Text style={styles.link}>Submit Measurement Online Now</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.btnView}>
@@ -116,9 +218,13 @@ function UploadReference() {
                                     <Image source={Icon5} style={{ flex: 1 }} resizeMode="contain" />
                                 </View>
                                 <View style={{ width: Dimensions.get('screen').width - 180 }}>
-                                    <TouchableOpacity onPress={() => navigation.navigate('Common', {
-                                        screen: 'clothcategory'
-                                    })}>
+                                    <TouchableOpacity onPress={() => {
+                                        if (!hasUploaded) {
+                                            ToastAndroid.show("Upload Reference Images, then continue to collect measurements!", ToastAndroid.SHORT);
+                                        } else {
+                                            setMeasureActionSheet(true);
+                                        }
+                                    }}>
                                         <Text style={styles.link}>Collect Measurements at Home</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.btnView} onPress={() => setActionSheet(true)}>
@@ -135,6 +241,7 @@ function UploadReference() {
                 </View>
             </View>
             {ActionSheetModal}
+            {CollectMeasuremntAddressModal}
         </ScrollView>
     )
 }

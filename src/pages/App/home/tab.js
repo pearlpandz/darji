@@ -4,12 +4,12 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 import CollectReference from './collectReference';
 import UploadReference from './uploadReference';
 
-const Route = ({ type }) => {
+const Route = ({ type, orderData }) => {
     return <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
         {
             type === 'tab1' ?
-                <UploadReference /> :
-                <CollectReference />
+                <UploadReference orderData={orderData} /> :
+                <CollectReference orderData={orderData} />
         }
     </ScrollView>
 };
@@ -19,9 +19,8 @@ const renderScene = SceneMap({
     tab2: () => <Route type='tab2' />,
 });
 
-export default function TabPageView() {
+export default function TabPageView({orderData}) {
     const layout = useWindowDimensions();
-
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
         { key: 'tab1', title: 'Upload Reference' },
@@ -59,7 +58,10 @@ export default function TabPageView() {
     return (
         <TabView
             navigationState={{ index, routes }}
-            renderScene={renderScene}
+            renderScene={SceneMap({
+                tab1: () => <Route type='tab1' orderData={orderData} />,
+                tab2: () => <Route type='tab2' orderData={orderData} />,
+            })}
             renderTabBar={renderTabBar}
             onIndexChange={setIndex}
             initialLayout={{ width: layout.width }}

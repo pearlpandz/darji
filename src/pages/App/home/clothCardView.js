@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { HOST } from '../../../../env';
 
 function ClothCard({ item }) {
     return (
@@ -8,7 +9,7 @@ function ClothCard({ item }) {
                 resizeMode="cover"
                 resizeMethod="scale"
                 style={{ height: 125, flex: 1 }}
-                source={item.image}
+                source={{uri:`${HOST}${item.image}`}} 
             />
             <View style={styles.cardItem}>
                 <Text style={styles.title}>{item.name}</Text>

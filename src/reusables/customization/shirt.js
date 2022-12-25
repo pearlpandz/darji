@@ -8,11 +8,11 @@ import SHIRT_FIT from './../../assets/customization/shirt/shirt-fit.png'
 import SHIRT_HEIGHT from './../../assets/customization/shirt/shirt-height.png'
 
 function Shirt({ config }) {
-    const { size, shoulder, fit, height, bodyType } = config;
+    const { shirtSize, shoulder, fit, height, bodyType } = config;
     return (
         <View style={styles.container}>
-            {size ? <View style={styles.shirtSizeContainer}>
-                <Text style={styles.measurements}>{size} cms</Text>
+            {shirtSize ? <View style={styles.shirtSizeContainer}>
+                <Text style={styles.measurements}>{shirtSize} cms</Text>
                 <Image style={styles.shirtSize} source={SHIRT_SIZE} />
             </View> : null}
             {shoulder ? <View style={styles.shirtShoulderContainer}>

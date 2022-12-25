@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     secondary: {
-        backgroundColor: '#fff',
+        backgroundColor: '#f7f7f7',
         alignItems: 'center',
         paddingVertical: 14,
         borderRadius: 6

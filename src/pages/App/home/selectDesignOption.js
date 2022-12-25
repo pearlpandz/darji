@@ -1,16 +1,40 @@
 import React, { useState } from 'react';
-import { Image, View, ScrollView, StyleSheet, Text, Dimensions, Pressable } from 'react-native';
+import { Image, View, ScrollView, StyleSheet, Text, Dimensions, Pressable, ToastAndroid, Platform, AlertIOS, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from '../../../reusables/button';
 import BottomBG from './../../../assets/images/bottom-bg.png';
 import Icon1 from './../../../assets/icons/icon-1.png';
 import Icon2 from './../../../assets/icons/icon-2.png';
 import Icon3 from './../../../assets/icons/icon-3.png';
+import axios from 'axios';
+import { HOST } from '../../../../env';
 
 function SelectDesignOption({ route, navigation }) {
 
     const { title, uri, gender } = route.params;
     const [knowMyDesign, setKnowMyDesign] = useState(false);
+
+    const createOrder = async (routeInfo) => {
+        try {
+            const url = `${HOST}/api/order`;
+            const payload = {
+                gender: routeInfo.gender,
+                orderType: routeInfo.title,
+                designType: routeInfo.designType
+            }
+            const { data } = await axios.post(url, payload, { withCredentials: true })
+            if (data) {
+                navigation.navigate('selectdress', {orderData: {...routeInfo, orderId: data.id}})
+            }
+        } catch (error) {
+            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+    }
 
     return (
         <ScrollView>
@@ -50,9 +74,10 @@ function SelectDesignOption({ route, navigation }) {
                                 label="shirt"
                                 type="primaryoutline"
                                 width={(Dimensions.get('screen').width - 100) / 2}
-                                onPress={() => navigation.navigate('selectdress', {
-                                    type: 'shirt',
-                                    title: 'Shirt'
+                                onPress={() => createOrder({
+                                    title: 'shirt',
+                                    gender: gender,
+                                    designType: 'i know my design'
                                 })}
                             />
                             <Button label="pant" type="primaryoutline" width={(Dimensions.get('screen').width - 100) / 2} />
@@ -60,7 +85,9 @@ function SelectDesignOption({ route, navigation }) {
                     </View>
                     <Pressable 
                         style={[styles.desginView, { borderBottomWidth: 1, borderColor: '#f1f3f4', }]}
-                        onPress={() => navigation.navigate('desginByMyself')} >
+                        onPress={() => navigation.navigate('desginByMyself', {
+                            gender: gender
+                        })} >
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={styles.iconContainer}>
                                 <Image source={Icon2} style={{ flex: 1 }} resizeMode="contain" />

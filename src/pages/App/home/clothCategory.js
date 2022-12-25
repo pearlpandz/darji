@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Image, View, ScrollView, StyleSheet, Text, Dimensions, Pressable, TouchableOpacity } from 'react-native';
+import { Image, View, ScrollView, StyleSheet, Text, Dimensions, Pressable, TouchableOpacity, Platform, Alert, AlertIOS } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Modal from 'react-native-modal';
 import Button from '../../../reusables/button';
@@ -9,13 +9,33 @@ import Icon11 from './../../../assets/icons/icon-11.png';
 import Icon12 from './../../../assets/icons/icon-12.png';
 import BACKGROUND_BANNER from './../../../assets/images/cloth.jpg';
 import Address from './address';
+import axios from 'axios';
+import { HOST } from '../../../../env';
 
-function ClothCategory({ navigation }) {
-
-    const address = '7-1-131/132, Bandiment, Monda Market, Secunderabad 500003';
+function ClothCategory({ navigation, route }) {
+    const { orderId } = route.params;
 
     const [actionSheet, setActionSheet] = useState(false);
-    const [pickupAddress, setPickUpAddress] = useState({});
+    const [courierSheet, setCourierSheet] = useState(false);
+
+    const updateAddress = async (payload) => {
+        try {
+            const url = `${HOST}/api/updateOrder/${orderId}`;
+            const { data } = await axios.put(url, payload, { withCredentials: true });
+            if (data) {
+                console.log(data);
+                navigation.navigate('summary', { ...data })
+            }
+        } catch (error) {
+            console.log(error);
+            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+    }
 
     const ActionSheetModal = useMemo(() => (
         <Modal
@@ -25,10 +45,51 @@ function ClothCategory({ navigation }) {
                 justifyContent: 'flex-end',
             }}>
             <View>
-                <Address setActionSheet={setActionSheet} setAddress={setPickUpAddress} />
+                <Address setActionSheet={setActionSheet} setAddress={(address) => {
+                    const _address = `${address.fullAddress}${address.floor ? ', ' + address.floor : ''}${address.landmark ? ', ' + address.landmark : ''}`;
+                    console.log(_address);
+                    const payload = {
+                        cloth_pickuplocation: _address
+                    };
+                    updateAddress(payload);
+                }} />
             </View>
         </Modal>
     ), [actionSheet])
+
+    const CourierActionSheetModal = useMemo(() => (
+        <Modal
+            isVisible={courierSheet}
+            style={{
+                margin: 0,
+                justifyContent: 'flex-end',
+            }}>
+            <View>
+                <View style={{
+                    padding: 20,
+                    backgroundColor: '#fff',
+                    borderTopLeftRadius: 12,
+                    borderTopRightRadius: 12,
+                }}>
+                    <Text style={{ fontWeight: '500', fontSize: 15, marginBottom: 15 }}>Courier Address (Our Office Address)</Text>
+                    <Text>3/235</Text>
+                    <Text>test street,</Text>
+                    <Text>area</Text>
+                    <Text>district</Text>
+                    <Text>state</Text>
+                    <Text>PIN: 000 000</Text>
+                    <View style={{ marginTop: 20 }}>
+                        <Button type="primary" label="continue" onPress={() => {
+                            const payload ={
+                                cloth_couriered: true
+                            }
+                            updateAddress(payload);
+                        }} />
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    ), [courierSheet])
 
     return (
         <ScrollView>
@@ -50,7 +111,7 @@ function ClothCategory({ navigation }) {
             <View style={{ paddingHorizontal: 20, position: 'relative' }}>
                 <View style={styles.designs}>
                     <View style={{ borderBottomWidth: 1, borderColor: '#f1f3f4', }}>
-                        <Pressable onPress={() => navigation.navigate('clothselection')}>
+                        <Pressable onPress={() => navigation.navigate('clothselection', { orderId: orderId })}>
                             <View style={styles.desginView}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <View style={styles.iconContainer}>
@@ -77,23 +138,26 @@ function ClothCategory({ navigation }) {
                             <Ionicons name="chevron-forward" size={20} color='#e8875b' />
                         </View>
                     </TouchableOpacity>
-                    <View style={[styles.desginView]}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <View style={styles.iconContainer}>
-                                <Image source={Icon12} style={{ flex: 1 }} resizeMode="contain" />
+                    <TouchableOpacity onPress={() => setCourierSheet(true)}>
+                        <View style={[styles.desginView]}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={styles.iconContainer}>
+                                    <Image source={Icon12} style={{ flex: 1 }} resizeMode="contain" />
+                                </View>
+                                <View style={{ width: Dimensions.get('screen').width - 180 }}>
+                                    <Text style={styles.link}>courier my cloth</Text>
+                                </View>
                             </View>
-                            <View style={{ width: Dimensions.get('screen').width - 180 }}>
-                                <Text style={styles.link}>courier my cloth</Text>
-                            </View>
+                            <Ionicons name="chevron-forward" size={20} color='#e8875b' />
                         </View>
-                        <Ionicons name="chevron-forward" size={20} color='#e8875b' />
-                    </View>
+                    </TouchableOpacity>
                     <View>
                         <Image style={{ width: Dimensions.get('screen').width - 40, height: 90 }} source={BottomBG} resizeMode="cover" />
                     </View>
                 </View>
             </View>
             {ActionSheetModal}
+            {CourierActionSheetModal}
         </ScrollView>
     )
 }

@@ -8,8 +8,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
+import NetInfo from '@react-native-community/netinfo';
 
-import { AuthContext, WelcomeContext } from './src/services/context';
+import { AuthContext, CurrentUserContext, WelcomeContext, NetworkContext } from './src/services/context';
 
 import Welcome from './src/pages/Auth/welcome';
 
@@ -45,6 +46,7 @@ import ReturnPage from './src/pages/App/return';
 
 import AVATAR from './src/assets/images/avatar.png';
 import LOGO from './src/assets/logo-1.png';
+import { NetworkCheck } from './src/HOC/network';
 
 const Drawer = createDrawerNavigator();
 const DrawerScreen = () => {
@@ -61,8 +63,8 @@ const DrawerScreen = () => {
     }}
     drawerContent={props => {
       return (
-        <DrawerContentScrollView {...props} 
-          contentContainerStyle={{flex: 1,flexDirection: 'column', justifyContent: 'space-between'}}>
+        <DrawerContentScrollView {...props}
+          contentContainerStyle={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
           <View>
             <View style={{ backgroundColor: '#87BCBF', padding: 20, flexDirection: 'row', alignItems: 'center' }}>
               <Image source={AVATAR} style={{ width: 60, height: 60, resizeMode: 'contain' }} />
@@ -73,16 +75,16 @@ const DrawerScreen = () => {
             </View>
             <DrawerItemList {...props} />
           </View>
-          <View style={{padding: 20}}>
-          <Pressable
-            onPress={async () => {
-              setAuthStatus(false);
-              await AsyncStorage.setItem('isAuthenticated', String(false));
-            }}
-            style={{borderWidth: 1, borderColor: '#85BABD', borderRadius: 12, padding: 10}}
-          >
-            <Text style={{color: '#fff', textAlign: 'center', textTransform: 'uppercase', fontWeight: '600'}}>logout</Text>
-          </Pressable>
+          <View style={{ padding: 20 }}>
+            <Pressable
+              onPress={async () => {
+                setAuthStatus(false);
+                await AsyncStorage.setItem('isAuthenticated', String(false));
+              }}
+              style={{ borderWidth: 1, borderColor: '#85BABD', borderRadius: 12, padding: 10 }}
+            >
+              <Text style={{ color: '#fff', textAlign: 'center', textTransform: 'uppercase', fontWeight: '600' }}>logout</Text>
+            </Pressable>
           </View>
         </DrawerContentScrollView>
       );
@@ -106,7 +108,7 @@ const DrawerScreen = () => {
         )
       }}
     />
-    <Drawer.Screen
+    {/* <Drawer.Screen
       name="settings"
       component={ReturnPage}
       options={{
@@ -127,7 +129,7 @@ const DrawerScreen = () => {
           <Ionicons name="notifications-outline" size={size} color="#87BCBF" />
         )
       }}
-    />
+    /> */}
     <Drawer.Screen
       name="help"
       component={ReturnPage}
@@ -181,11 +183,10 @@ const AuthStackScreen = () => (
     initialRouteName="authindex">
     <AuthStack.Screen
       name="authindex"
-      component={AuthenticationPage}
+      component={NetworkCheck(AuthenticationPage)}
       options={{
         headerShown: false,
       }} />
-
     <AuthStack.Screen name="register" component={Register} options={{
       headerShown: true,
       title: 'Register',
@@ -296,7 +297,7 @@ const TabStackScreen = () => (
       component={CartPage}
       options={({ navigation }) => ({
         headerShown: true,
-        headerTitle: () => <Image source={LOGO} style={{width: 150, height: 30, resizeMode: 'contain'}} />,
+        headerTitle: () => <Image source={LOGO} style={{ width: 150, height: 30, resizeMode: 'contain' }} />,
         tabBarLabel: 'Cart',
         headerLeft: () => (
           <Ionicons
@@ -308,14 +309,14 @@ const TabStackScreen = () => (
         ),
       })}
     />
-    <Tab.Screen
+    {/* <Tab.Screen
       name="account"
       component={AccountStackScreen}
       options={{
         headerShown: false,
         tabBarLabel: 'Account',
       }}
-    />
+    /> */}
   </Tab.Navigator>
 );
 
@@ -395,7 +396,7 @@ const HomeStackScreen = () => {
       component={HomePage}
       options={({ navigation }) => ({
         headerShown: true,
-        headerTitle: () => <Image source={LOGO} style={{width: 150, height: 30, resizeMode: 'contain'}} />,
+        headerTitle: () => <Image source={LOGO} style={{ width: 150, height: 30, resizeMode: 'contain' }} />,
         headerLeft: () => (
           <Ionicons
             name="md-menu-outline"
@@ -453,7 +454,7 @@ const StylistStackScreen = () => (
       component={StylistPage}
       options={({ navigation }) => ({
         headerShown: true,
-        headerTitle: () => <Image source={LOGO} style={{width: 150, height: 30, resizeMode: 'contain'}} />,
+        headerTitle: () => <Image source={LOGO} style={{ width: 150, height: 30, resizeMode: 'contain' }} />,
         headerLeft: () => (
           <Ionicons
             name="md-menu-outline"
@@ -514,8 +515,10 @@ const RootStackScreen = ({ isWelcomed, isAuthenticated }) => {
 const App = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const [isAuthenticated, setAuthStatus] = useState(false);
+  const [session, setSession] = useState({});
   const [isWelcomed, setWelcome] = useState(false);
   const [isCheckedAsyncStorage, setChecked] = useState(false);
+  const [isOnline, setNetworkStatus] = useState(NetworkContext);
 
   useEffect(() => {
     const checkAsyncStorage = async () => {
@@ -542,20 +545,64 @@ const App = () => {
     checkAsyncStorage();
   }, [AsyncStorage]);
 
+
+  // Network status listner change
+  useEffect(() => {
+    let previousNetworkstatus;
+    const NetworkTracker = NetInfo.addEventListener(
+      async ({ isConnected, isInternetReachable }) => {
+        // used isInternetReachable as it makes sense, Sometimes data might run out but we can stick back to isConnected as well
+        if (previousNetworkstatus !== isInternetReachable) {
+          previousNetworkstatus = isInternetReachable;
+          console.log(`Network Status: ${isInternetReachable}`);
+          setNetworkStatus(isInternetReachable);
+          if (isInternetReachable && !previousNetworkstatus) {
+            console.log('Reached to refresh');
+            console.log('fetchDataFromAEM function calling....');
+            const idToken = await getKeyValue('auth_token');
+            if (idToken) {
+              console.log(idToken);
+              fetchDataFromAEM(idToken)
+                .then(res => {
+                  console.log('Results....', res);
+                  ToastAndroid.show("Data fetched successfully", ToastAndroid.SHORT);
+                })
+                .catch(err => {
+                  console.warn(err);
+                  Alert.alert(
+                    'Network Error',
+                    'Please verify internet connectivity to proceed into the application',
+                  );
+                });
+            }
+            // here we call the function for refresh data and set the loader
+          }
+        }
+      },
+    );
+    return () => {
+      NetworkTracker();
+    };
+  }, []);
+
   return (
     <WelcomeContext.Provider value={{ isWelcomed, setWelcome }}>
       <AuthContext.Provider value={{ isAuthenticated, setAuthStatus }}>
-        <NavigationContainer>
-          <StatusBar style="auto" />
-          {
-            isCheckedAsyncStorage ?
-              <RootStackScreen
-                isAuthenticated={isAuthenticated}
-                isWelcomed={isWelcomed}
-              /> :
-              null
-          }
-        </NavigationContainer>
+        <NetworkContext.Provider value={{ isOnline, setNetworkStatus }}>
+          <CurrentUserContext.Provider value={{ session, setSession }}>
+            <NavigationContainer>
+              <StatusBar style="auto" />
+              {
+                isCheckedAsyncStorage ?
+                  <RootStackScreen
+                    isAuthenticated={isAuthenticated}
+                    isWelcomed={isWelcomed}
+                  /> :
+                  null
+              }
+            </NavigationContainer>
+          </CurrentUserContext.Provider>
+        </NetworkContext.Provider>
       </AuthContext.Provider>
     </WelcomeContext.Provider>
   )

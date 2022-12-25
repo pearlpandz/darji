@@ -1,19 +1,52 @@
-import React, {useState} from 'react';
-import { Image, View, ScrollView, StyleSheet, Text, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { Image, View, ScrollView, StyleSheet, Text, Pressable, Alert, AlertIOS } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ICON from './../../../assets/icons/icon-13.png';
 import Button from '../../../reusables/button';
+import axios from 'axios';
+import { HOST } from '../../../../env';
 
 function ClothDetail({ route, navigation }) {
-    const { image, name, price } = route.params;
+    const { image, name, pricePermeter, orderId, id } = route.params;
     const [selectedQuantity, setQuantity] = useState(1);
+
+    const handleSelectCloth = async () => {
+        try {
+            console.log(route.params);
+            const url = `${HOST}/api/updateOrder/${orderId}`;
+            console.log(url);
+            const payload = {
+                "cloth_length": selectedQuantity,
+                "cloth_total_price": Number(selectedQuantity) * Number(pricePermeter),
+                "cloth_id": id
+            }
+            console.log(payload)
+            const { data } = await axios.put(url, payload, {withCredentials: true})
+            if (data) {
+                console.log(data);
+                navigation.navigate('summary', {...data, cloth_name: name})
+            }
+        } catch (error) {
+            console.log(error.response.data);
+            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            if (Platform.OS === 'android') {
+                Alert.alert('Warning', msg);
+            } else {
+                AlertIOS.alert(msg);
+            }
+        }
+
+
+
+    }
+
     return (
         <ScrollView style={{ backgroundColor: '#fff' }}>
             <View style={styles.imageContainer}>
                 <Pressable style={styles.backArrow} onPress={() => navigation.goBack()}>
                     <Ionicons name='chevron-back' size={24} color="#fff" />
                 </Pressable>
-                <Image style={{ flex: 1, width: '100%' }} source={image} resizeMode="cover" />
+                <Image style={{ flex: 1, width: '100%' }} source={{uri: `${HOST}${image}`}} resizeMode="cover" />
             </View>
             <View style={styles.titleCard}>
                 <View style={styles.iconContainer}>
@@ -22,17 +55,17 @@ function ClothDetail({ route, navigation }) {
                 <View>
                     <Text style={styles.clothName}>{name}</Text>
                     <View style={styles.hr} />
-                    <Text style={styles.price}>Rs.{price} / meter</Text>
+                    <Text style={styles.price}>Rs.{pricePermeter} / meter</Text>
                 </View>
             </View>
             <View style={{ padding: 20 }}>
                 <View style={[styles.boxWithShadow, styles.counter]}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Pressable style={styles.circle} disabled={selectedQuantity == 1} onPress={() => setQuantity(selectedQuantity-1)}>
+                        <Pressable style={styles.circle} disabled={selectedQuantity == 1} onPress={() => setQuantity(selectedQuantity - 1)}>
                             <Ionicons name='remove' color='#E8875C' size={32} />
                         </Pressable>
-                        <Text style={{ fontSize: 16, color: '#324755' }}>1.0 mtr</Text>
-                        <Pressable style={styles.circle} onPress={() => setQuantity(selectedQuantity+1)}>
+                        <Text style={{ fontSize: 16, color: '#324755' }}>{selectedQuantity} mtr</Text>
+                        <Pressable style={styles.circle} onPress={() => setQuantity(selectedQuantity + 1)}>
                             <Ionicons name='add' color='#E8875C' size={32} />
                         </Pressable>
                     </View>
@@ -50,8 +83,8 @@ function ClothDetail({ route, navigation }) {
                     <Text style={styles.sectionContent}>Material Type: Linen</Text>
                     <Text style={styles.sectionContent}>Color: Blue</Text>
                 </View>
-                <View style={{alignItems: 'center', marginTop: 30}}>
-                    <Button label="select" type="primaryoutline" width={150} onPress={() => navigation.navigate('summary')} />
+                <View style={{ alignItems: 'center', marginTop: 30 }}>
+                    <Button label="select" type="primaryoutline" width={150} onPress={() => handleSelectCloth()} />
                 </View>
             </View>
         </ScrollView>

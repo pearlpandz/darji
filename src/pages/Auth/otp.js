@@ -10,6 +10,7 @@ import Button from '../../reusables/button';
 
 import IonIcons from 'react-native-vector-icons/Ionicons'
 import axios from 'axios';
+import { HOST } from '../../../env';
 
 
 function OtpValidation({ route, navigation }) {
@@ -28,7 +29,7 @@ function OtpValidation({ route, navigation }) {
     const getOtp = async () => {
         try {
             console.log(userId, mobile);
-            const url = `http://10.0.2.2:8000/api/getOtp/${userId}`;
+            const url = `${HOST}/api/getOtp/${userId}`;
             const payload = { mobileNumber: mobile };
             const { data } = await axios.put(url, payload);
             if (data) {
@@ -60,7 +61,7 @@ function OtpValidation({ route, navigation }) {
             console.log("isOtpMatched",isOtpMatched);
             if (isOtpMatched) {
                 console.log('-------------- otp matched -----------------')
-                const url = 'http://10.0.2.2:8000/api/verifyMobileNumber';
+                const url = `${HOST}/api/verifyMobileNumber`;
                 const payload = { mobileNumber: mobile, isOtpMatched: true };
                 const { data } = await axios.put(url, payload);
                 console.log(data);

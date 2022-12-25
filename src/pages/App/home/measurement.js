@@ -1,11 +1,14 @@
+import axios from 'axios';
 import React, { useMemo, useState } from 'react'
-import { Text, View, StatusBar, SafeAreaView, StyleSheet, Image, FlatList, Dimensions, TouchableOpacity, ScrollView, TextInput } from 'react-native'
+import { Text, View, StatusBar, SafeAreaView, StyleSheet, Image, FlatList, Dimensions, TouchableOpacity, ScrollView, TextInput, Alert, AlertIOS, ToastAndroid } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { HOST } from '../../../../env';
 import Button from '../../../reusables/button';
 import Shirt from '../../../reusables/customization/shirt';
 
 
-function Measurement({ routes, navigation }) {
+function Measurement({ route, navigation }) {
+  const {orderId} = route.params;
   const customizeConfigs = [
     { title: 'select body type', key: 'bodyType' },
     { title: 'select shirt size', key: 'size' },
@@ -32,7 +35,42 @@ function Measurement({ routes, navigation }) {
     { name: 'relaxed', image: require('./../../../assets/customization/shirt/fit-3.png') },
   ]
 
-  const [config, setConfig] = useState({ size: 0, shoulder: '', fit: '', bodyType: '', height: '' });
+  const [config, setConfig] = useState({ size: 0, shoulder: '', fit: '', bodyType: '', height: '',});
+  const [notes, setNotes] = useState();
+
+  const isValid = () => {
+    return Object.values(config).every(a => a);
+  }
+
+  const updateMeasurements = async () => {
+    try {
+      const url = `${HOST}/api/updateOrder/${orderId}`
+      const payload = {
+        "measurements": {
+          "bodyType": config.bodyType,
+          "shirtSize": config.size,
+          "shoulderType": config.shoulder,
+          "height": config.height,
+          "fit": config.fit,
+          "notes": notes
+        }
+      }
+      const { data } = await axios.put(url, payload)
+      if (data) {
+        console.log("measurement res:", data)
+        navigation.navigate('Common', { screen: 'successMeasurement', params: {orderId: orderId} })
+        ToastAndroid.show("Measurements updated!", ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.log(error);
+      const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+      if (Platform.OS === 'android') {
+        Alert.alert('Warning', msg);
+      } else {
+        AlertIOS.alert(msg);
+      }
+    }
+  }
 
   const customizer = ({ item, index }) => {
     switch (item.key) {
@@ -129,9 +167,12 @@ function Measurement({ routes, navigation }) {
           <View key={item.index} style={[styles.card, { paddingHorizontal: 20, marginBottom: 10 }]}>
             <Text style={styles.cardInfo}>6/6</Text>
             <Text style={styles.cardTitle}>{item.title}</Text>
-            <TextInput style={[styles.input]} multiline numberOfLines={8} textAlignVertical="top" />
+            <TextInput style={[styles.input]} multiline numberOfLines={8} textAlignVertical="top"
+              value={notes}
+              onChangeText={(_notes) => { setNotes(_notes) }}
+             />
           </View>
-          <Button label="save & next" type="primary" width={Dimensions.get('window').width - 60} onPress={() => navigation.navigate('Common', { screen: 'successMeasurement' })} />
+          <Button label="save & next" type="primary" width={Dimensions.get('window').width - 60} disabled={!isValid()} onPress={() => updateMeasurements()} />
         </View>
 
 

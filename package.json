@@ -10,6 +10,7 @@
     "clean": "cd android && ./gradlew clean && cd .."
   },
   "dependencies": {
+    "@react-native-community/netinfo": "^9.3.7",
     "@react-native-google-signin/google-signin": "^9.0.1",
     "@react-navigation/drawer": "^6.5.0",
     "axios": "^1.2.1",

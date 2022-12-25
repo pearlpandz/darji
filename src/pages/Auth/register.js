@@ -6,6 +6,7 @@ import Button from '../../reusables/button';
 import axios from 'axios';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
+import { HOST } from '../../../env';
 
 const ANDROID_CLIENT_ID = "280676335640-s4fv6lmjr0tqlb81thts0lnmct5d9ig6.apps.googleusercontent.com";
 const IOS_CLIENT_ID = "280676335640-bmdv3027s2i362t30arsd17s0k40o9b0.apps.googleusercontent.com";
@@ -52,7 +53,7 @@ function Register({ navigation }) {
                 password: formdata.password.value,
                 email: formdata.email.value
             };
-            const url = 'http://10.0.2.2:8000/api/register';
+            const url = `${HOST}/api/register`;
             const { data } = await axios.post(url, payload);
             if (data) {
                 console.log('data', data);
@@ -76,7 +77,7 @@ function Register({ navigation }) {
 
     const socialRegister = async (payload) => {
         try {
-            const url = 'http://10.0.2.2:8000/api/register';
+            const url = `${HOST}/api/register`;
             const { data } = await axios.post(url, payload)
             if (data) {
                 console.log(data);

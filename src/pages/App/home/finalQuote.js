@@ -7,13 +7,14 @@ import Button from '../../../reusables/button';
 
 import Cloth from './../../../assets/images/cloth.jpg';
 
-function FinalQuote({navigation}) {
+function FinalQuote({navigation, route}) {
 
-    const config = { size: 42, shoulder: 'average', fit: 'super slim', bodyType: 'athletic', height: "5'2", notes: "Linen fabric is exceptionally breathable and absorbent, making it a great summer fabric. It is also skin-friendly as it is made entirely of natural fibers" };
+    const { id, measurements, cloth_length, cloth_total_price, cloth_name, measurementAddress, cloth_pickuplocation, cloth_couriered } = route.params;
+    const config = { ...measurements };
     const selectedCloth = {
-        name: 'linen blue',
-        size: 5,
-        price: 50 // price for 1mtr
+        name: cloth_name,
+        size: cloth_length,
+        price: cloth_total_price
     };
 
     const [address, setAddress] = useState('');
@@ -63,7 +64,15 @@ function FinalQuote({navigation}) {
                         <Text style={{fontWeight: '500'}}>Linen fabric is exceptionally breathable and absorbent, making it a great summer fabric.</Text>
                     </View>
                     <View>
-                        <TouchableOpacity style={styles.btn}>
+                        <TouchableOpacity style={styles.btn} onPress={() => {
+                            navigation.reset({
+                                index: 0,
+                                routes: [{
+                                    name: 'cart'
+                                }]
+                            })
+                            navigation.navigate('cart')
+                        }}>
                             <Text style={styles.btnLabel}>place order</Text>
                             <Text style={styles.btnInfo}>(payment advance min 60% - Rs.700)</Text>
                         </TouchableOpacity>

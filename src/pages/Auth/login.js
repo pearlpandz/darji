@@ -7,6 +7,7 @@ import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-si
 import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk';
 import { AuthContext } from '../../services/context';
 import axios from 'axios';
+import { HOST } from '../../../env';
 
 const ANDROID_CLIENT_ID = "280676335640-s4fv6lmjr0tqlb81thts0lnmct5d9ig6.apps.googleusercontent.com";
 const IOS_CLIENT_ID = "280676335640-bmdv3027s2i362t30arsd17s0k40o9b0.apps.googleusercontent.com";
@@ -34,7 +35,7 @@ function Login({ navigation }) {
 
     const socialLogin = async (payload) => {
         try {
-            const url = 'http://10.0.2.2:8000/api/socialLogin';
+            const url = `${HOST}/api/socialLogin`;
             console.log('--------------social login------------')
             console.log(payload);
             const { data } = await axios.post(url, payload)
@@ -44,6 +45,7 @@ function Login({ navigation }) {
                 ToastAndroid.show("Successfully Loggedin!", ToastAndroid.SHORT);
             }
         } catch (error) {
+            console.log(error.status)
             console.log(error.response.data);
             const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
             if (Platform.OS === 'android') {
@@ -88,7 +90,7 @@ function Login({ navigation }) {
 
     const simpleLogin = async () => {
         try {
-            const url = 'http://10.0.2.2:8000/api/login';
+            const url = `${HOST}/api/login`;
             const payload = {
                 mobileNumber: formdata.mobileNumber.value,
                 password: formdata.password.value
@@ -96,12 +98,13 @@ function Login({ navigation }) {
             console.log(payload)
             const { data } = await axios.post(url, payload)
             if (data) {
-                console.log(data);
+                console.log("user info:", data);
                 setAuthStatus(true);
                 await AsyncStorage.setItem('isAuthenticated', String(true));
                 ToastAndroid.show("Successfully LoggedIn!", ToastAndroid.SHORT);
             }
         } catch (error) {
+            console.log(error.status)
             console.log(error.response.data);
             const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
             if (Platform.OS === 'android') {
@@ -181,6 +184,7 @@ function Login({ navigation }) {
                                         })
                                     }
                                 }).catch((e) => {
+                                    console.log(e.status)
                                     console.log("ERROR IS: " + JSON.stringify(e));
                                 })
                                 // navigation.navigate('otp')

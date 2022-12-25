@@ -14,7 +14,7 @@ export default function TabPageView({ navigation, index, setIndex }) {
     ]);
 
     const Route = ({ type }) => {
-        return <ScrollView style={{ flex: 1, backgroundColor: '#F7F7F7' }}>
+        return <ScrollView style={{ flex: 1 }}>
             {type === 'signin' ? <Login navigation={navigation} /> : <Register navigation={navigation} />}
         </ScrollView>
     };
