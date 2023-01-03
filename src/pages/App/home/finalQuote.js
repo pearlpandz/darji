@@ -6,18 +6,31 @@ import AttributeView from './attributeView';
 import Button from '../../../reusables/button';
 
 import Cloth from './../../../assets/images/cloth.jpg';
+import { useSelector } from 'react-redux';
 
 function FinalQuote({navigation, route}) {
-
-    const { id, measurements, cloth_length, cloth_total_price, cloth_name, measurementAddress, cloth_pickuplocation, cloth_couriered } = route.params;
+    const orders = useSelector(state => state.orders);
+    const { 
+        measurements, 
+        cloth_id, cloth_length, cloth_total_price, cloth, cloth_pickuplocation, cloth_couriered,
+        measurementAddress, 
+        deliveryAddress 
+    } = orders;
     const config = { ...measurements };
-    const selectedCloth = {
-        name: cloth_name,
-        size: cloth_length,
-        price: cloth_total_price
-    };
+    const {name: cloth_name} = cloth;
 
-    const [address, setAddress] = useState('');
+    const paymentInitiate = () => {
+        console.log('initiate payment gateway');
+        console.log('once payment done, create order and update orderReferenceImage for the orderId');
+
+        navigation.reset({
+            index: 0,
+            routes: [{
+                name: 'cart'
+            }]
+        })
+        navigation.navigate('cart')
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, backgroundColor: '#87BCBF' }}>
@@ -57,22 +70,17 @@ function FinalQuote({navigation, route}) {
                     </View>
                     <View style={[styles.hr, styles.row]} />
                     <View style={styles.row}>
+                        <View>
                         <Text style={styles.label}>Address</Text>
+                        <Text>{deliveryAddress}</Text>
+                        </View>
                         <Button type="primaryoutline" label="edit" width={100} onPress={() => navigation.goBack()} />
                     </View>
-                    <View style={styles.row}>
-                        <Text style={{fontWeight: '500'}}>Linen fabric is exceptionally breathable and absorbent, making it a great summer fabric.</Text>
-                    </View>
+                    {/* <View style={styles.row}>
+                        <Text style={{fontWeight: '500'}}>{cloth_name}</Text>
+                    </View> */}
                     <View>
-                        <TouchableOpacity style={styles.btn} onPress={() => {
-                            navigation.reset({
-                                index: 0,
-                                routes: [{
-                                    name: 'cart'
-                                }]
-                            })
-                            navigation.navigate('cart')
-                        }}>
+                        <TouchableOpacity style={styles.btn} onPress={() => paymentInitiate()}>
                             <Text style={styles.btnLabel}>place order</Text>
                             <Text style={styles.btnInfo}>(payment advance min 60% - Rs.700)</Text>
                         </TouchableOpacity>

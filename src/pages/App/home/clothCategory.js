@@ -9,25 +9,21 @@ import Icon11 from './../../../assets/icons/icon-11.png';
 import Icon12 from './../../../assets/icons/icon-12.png';
 import BACKGROUND_BANNER from './../../../assets/images/cloth.jpg';
 import Address from './address';
-import axios from 'axios';
-import { HOST } from '../../../../env';
+import { useDispatch } from 'react-redux';
+import { updateOrder } from '../../../redux/slices/order';
 
-function ClothCategory({ navigation, route }) {
-    const { orderId } = route.params;
-
+function ClothCategory({ navigation }) {
+    const dispatch = useDispatch();
     const [actionSheet, setActionSheet] = useState(false);
     const [courierSheet, setCourierSheet] = useState(false);
 
+
     const updateAddress = async (payload) => {
         try {
-            const url = `${HOST}/api/updateOrder/${orderId}`;
-            const { data } = await axios.put(url, payload, { withCredentials: true });
-            if (data) {
-                console.log(data);
-                navigation.navigate('summary', { ...data })
-            }
+            dispatch(updateOrder(payload));
+            navigation.navigate('summary')
         } catch (error) {
-            console.log(error);
+            console.error(error);
             const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
             if (Platform.OS === 'android') {
                 Alert.alert('Warning', msg);
@@ -111,7 +107,7 @@ function ClothCategory({ navigation, route }) {
             <View style={{ paddingHorizontal: 20, position: 'relative' }}>
                 <View style={styles.designs}>
                     <View style={{ borderBottomWidth: 1, borderColor: '#f1f3f4', }}>
-                        <Pressable onPress={() => navigation.navigate('clothselection', { orderId: orderId })}>
+                        <Pressable onPress={() => navigation.navigate('clothselection')}>
                             <View style={styles.desginView}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <View style={styles.iconContainer}>

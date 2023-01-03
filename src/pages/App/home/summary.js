@@ -8,9 +8,23 @@ import Button from '../../../reusables/button';
 import Cloth from './../../../assets/images/cloth.jpg';
 import axios from 'axios';
 import { HOST } from '../../../../env';
+import { updateOrder, resetOrder } from '../../../redux/slices/order';
+import { useDispatch, useSelector } from 'react-redux';
 
 function Summary({ navigation, route }) {
-    const { id, measurements, cloth_length, cloth_total_price, cloth_name, measurementAddress, cloth_pickuplocation, cloth_couriered } = route.params;
+    const dispatch = useDispatch();
+    const orders = useSelector(state => state.orders);
+    const { 
+        cloth_id, 
+        measurements, 
+        cloth_length, 
+        cloth_total_price, 
+        cloth_name, 
+        measurementAddress, 
+        cloth_pickuplocation, 
+        cloth_couriered,
+        reference 
+    } = orders;
     const config = { ...measurements };
     const selectedCloth = {
         name: cloth_name,
@@ -22,33 +36,73 @@ function Summary({ navigation, route }) {
 
     const updateDeliveryAddress = async (isDraft) => {
         try {
-            const url = `${HOST}/api/updateOrder/${id}`;
             const payload = {
                 deliveryAddress: address,
                 orderStatus: isDraft ? 'draft' : 'complete',
                 orderDeliveryStatus: 'pending',
                 orderPaymentStatus: 'pending'
             }
-            console.log(payload);
-            const { data } = await axios.put(url, payload, { withCredentials: true })
-            if (data) {
-                console.log(data);
-                if (!isDraft) {
-                    navigation.navigate('finalquote', {
-                        ...route.params
+            dispatch(updateOrder(payload));
+            if (!isDraft) {
+                navigation.navigate('finalquote')
+            } else {
+                const url = `${HOST}/api/order`;
+                const _orders = {...orders};
+                delete _orders.cloth;
+                const _payload1 = {
+                    ..._orders,
+                    deliveryAddress: address,
+                    orderStatus: isDraft ? 'draft' : 'complete',
+                    orderDeliveryStatus: 'pending',
+                    orderPaymentStatus: 'pending'
+                };
+                delete _payload1.reference
+
+                const response = await axios.post(url, _payload1, { withCredentials: true })
+                console.log("response", response);
+                const { data } = response;
+                if (data) {
+                    console.log("order created", data.id);
+
+                    if(reference?.length > 0) {
+                        const formdata = new FormData();
+                        await Promise.all(orders.reference.map((item, index) => {
+                            console.log('reference', item);
+                            formdata.append('reference', {
+                                uri: item.uri,
+                                type: item.type,
+                                name: item.fileName
+                            });
+                        }));
+                        const url1 = `${HOST}/api/orderReferenceImage/${data.id}`;
+                        await axios.post(url1, formdata, {
+                            withCredentials: true,
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        });
+                    }
+
+                    console.log('order saved in draft');
+                    dispatch(resetOrder())
+                    navigation.reset({
+                        index: 0,
+                        routes: [{
+                            name: 'cart'
+                        }]
                     })
-                } else {
-                    console.log('redirect to orders list page');
+                    navigation.navigate('cart')
+
                 }
             }
         } catch (error) {
-            console.log(error.response.data);
-            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
-            if (Platform.OS === 'android') {
-                Alert.alert('Warning', msg);
-            } else {
-                AlertIOS.alert(msg);
-            }
+            console.error(error)
+            // const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
+            // if (Platform.OS === 'android') {
+            //     Alert.alert('Warning', msg);
+            // } else {
+            //     AlertIOS.alert(msg);
+            // }
         }
     }
 
@@ -108,12 +162,12 @@ function Summary({ navigation, route }) {
                             cloth_couriered ?
                                 <View>
                                     <Text style={{ fontWeight: '500', fontSize: 15, marginBottom: 15, color: '#fff' }}>Cloth will be couriered to the below mentioned address (Our Office Address)</Text>
-                                    <Text style={{color: '#fff'}}>3/235</Text>
-                                    <Text style={{color: '#fff'}}>test street,</Text>
-                                    <Text style={{color: '#fff'}}>area</Text>
-                                    <Text style={{color: '#fff'}}>district</Text>
-                                    <Text style={{color: '#fff'}}>state</Text>
-                                    <Text style={{color: '#fff'}}>PIN: 000 000</Text>
+                                    <Text style={{ color: '#fff' }}>3/235</Text>
+                                    <Text style={{ color: '#fff' }}>test street,</Text>
+                                    <Text style={{ color: '#fff' }}>area</Text>
+                                    <Text style={{ color: '#fff' }}>district</Text>
+                                    <Text style={{ color: '#fff' }}>state</Text>
+                                    <Text style={{ color: '#fff' }}>PIN: 000 000</Text>
                                 </View> :
                                 <View>
                                     <Text style={{ color: '#fff' }}>Cloth will pick up from: <Text style={{ fontWeight: '500' }}>{cloth_pickuplocation}</Text></Text>

@@ -105,7 +105,7 @@ function Login({ navigation }) {
             }
         } catch (error) {
             console.log(error.status)
-            console.log(error.response.data);
+            console.log(error);
             const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
             if (Platform.OS === 'android') {
                 Alert.alert('Warning', msg);

@@ -1,14 +1,14 @@
-import axios from 'axios';
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { Text, View, StatusBar, SafeAreaView, StyleSheet, Image, FlatList, Dimensions, TouchableOpacity, ScrollView, TextInput, Alert, AlertIOS, ToastAndroid } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { HOST } from '../../../../env';
+import { useDispatch } from 'react-redux';
+import { updateOrder } from '../../../redux/slices/order';
 import Button from '../../../reusables/button';
 import Shirt from '../../../reusables/customization/shirt';
 
+function Measurement({ navigation }) {
+  const dispatch = useDispatch();
 
-function Measurement({ route, navigation }) {
-  const {orderId} = route.params;
   const customizeConfigs = [
     { title: 'select body type', key: 'bodyType' },
     { title: 'select shirt size', key: 'size' },
@@ -35,7 +35,8 @@ function Measurement({ route, navigation }) {
     { name: 'relaxed', image: require('./../../../assets/customization/shirt/fit-3.png') },
   ]
 
-  const [config, setConfig] = useState({ size: 0, shoulder: '', fit: '', bodyType: '', height: '',});
+  const [config, setConfig] = useState({ size: 0, shoulder: '', fit: '', bodyType: '', height: '', });
+  
   const [notes, setNotes] = useState();
 
   const isValid = () => {
@@ -44,7 +45,6 @@ function Measurement({ route, navigation }) {
 
   const updateMeasurements = async () => {
     try {
-      const url = `${HOST}/api/updateOrder/${orderId}`
       const payload = {
         "measurements": {
           "bodyType": config.bodyType,
@@ -55,12 +55,9 @@ function Measurement({ route, navigation }) {
           "notes": notes
         }
       }
-      const { data } = await axios.put(url, payload)
-      if (data) {
-        console.log("measurement res:", data)
-        navigation.navigate('Common', { screen: 'successMeasurement', params: {orderId: orderId} })
-        ToastAndroid.show("Measurements updated!", ToastAndroid.SHORT);
-      }
+      dispatch(updateOrder(payload));
+      navigation.navigate('Common', { screen: 'successMeasurement' })
+      ToastAndroid.show("Measurements updated!", ToastAndroid.SHORT);
     } catch (error) {
       console.log(error);
       const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
@@ -170,7 +167,7 @@ function Measurement({ route, navigation }) {
             <TextInput style={[styles.input]} multiline numberOfLines={8} textAlignVertical="top"
               value={notes}
               onChangeText={(_notes) => { setNotes(_notes) }}
-             />
+            />
           </View>
           <Button label="save & next" type="primary" width={Dimensions.get('window').width - 60} disabled={!isValid()} onPress={() => updateMeasurements()} />
         </View>

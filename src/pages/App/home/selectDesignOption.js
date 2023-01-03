@@ -6,33 +6,26 @@ import BottomBG from './../../../assets/images/bottom-bg.png';
 import Icon1 from './../../../assets/icons/icon-1.png';
 import Icon2 from './../../../assets/icons/icon-2.png';
 import Icon3 from './../../../assets/icons/icon-3.png';
-import axios from 'axios';
-import { HOST } from '../../../../env';
+import { useDispatch } from 'react-redux';
+import { updateOrder } from '../../../redux/slices/order';
 
 function SelectDesignOption({ route, navigation }) {
-
+    const dispatch = useDispatch();
     const { title, uri, gender } = route.params;
     const [knowMyDesign, setKnowMyDesign] = useState(false);
 
     const createOrder = async (routeInfo) => {
-        try {
-            const url = `${HOST}/api/order`;
-            const payload = {
-                gender: routeInfo.gender,
-                orderType: routeInfo.title,
-                designType: routeInfo.designType
-            }
-            const { data } = await axios.post(url, payload, { withCredentials: true })
-            if (data) {
-                navigation.navigate('selectdress', {orderData: {...routeInfo, orderId: data.id}})
-            }
-        } catch (error) {
-            const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
-            if (Platform.OS === 'android') {
-                Alert.alert('Warning', msg);
-            } else {
-                AlertIOS.alert(msg);
-            }
+        const payload = {
+            gender: routeInfo.gender,
+            orderType: routeInfo.title,
+            designType: routeInfo.designType
+        }
+        dispatch(updateOrder(payload));
+
+        if (routeInfo.designType === 'design by myself') {
+            navigation.navigate('desginByMyself', { gender: gender })
+        } else {
+            navigation.navigate('selectdress', { orderData: { ...routeInfo } })
         }
     }
 
@@ -83,11 +76,13 @@ function SelectDesignOption({ route, navigation }) {
                             <Button label="pant" type="primaryoutline" width={(Dimensions.get('screen').width - 100) / 2} />
                         </View>}
                     </View>
-                    <Pressable 
+                    <Pressable
                         style={[styles.desginView, { borderBottomWidth: 1, borderColor: '#f1f3f4', }]}
-                        onPress={() => navigation.navigate('desginByMyself', {
-                            gender: gender
-                        })} >
+                        onPress={() => createOrder({
+                            gender: gender,
+                            designType: 'design by myself'
+                        })
+                        } >
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={styles.iconContainer}>
                                 <Image source={Icon2} style={{ flex: 1 }} resizeMode="contain" />

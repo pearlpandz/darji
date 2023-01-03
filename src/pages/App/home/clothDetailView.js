@@ -5,27 +5,24 @@ import ICON from './../../../assets/icons/icon-13.png';
 import Button from '../../../reusables/button';
 import axios from 'axios';
 import { HOST } from '../../../../env';
+import { updateOrder } from '../../../redux/slices/order';
+import { useDispatch } from 'react-redux';
 
 function ClothDetail({ route, navigation }) {
-    const { image, name, pricePermeter, orderId, id } = route.params;
+    const { image, name, pricePermeter, id } = route.params;
+    const dispatch = useDispatch();
     const [selectedQuantity, setQuantity] = useState(1);
 
     const handleSelectCloth = async () => {
         try {
-            console.log(route.params);
-            const url = `${HOST}/api/updateOrder/${orderId}`;
-            console.log(url);
             const payload = {
-                "cloth_length": selectedQuantity,
-                "cloth_total_price": Number(selectedQuantity) * Number(pricePermeter),
-                "cloth_id": id
+                cloth_length: selectedQuantity,
+                cloth_total_price: Number(selectedQuantity) * Number(pricePermeter),
+                cloth_id: id,
+                cloth: { id, name, image, pricePermeter }
             }
-            console.log(payload)
-            const { data } = await axios.put(url, payload, {withCredentials: true})
-            if (data) {
-                console.log(data);
-                navigation.navigate('summary', {...data, cloth_name: name})
-            }
+            dispatch(updateOrder(payload));
+            navigation.navigate('summary')
         } catch (error) {
             console.log(error.response.data);
             const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
@@ -46,7 +43,7 @@ function ClothDetail({ route, navigation }) {
                 <Pressable style={styles.backArrow} onPress={() => navigation.goBack()}>
                     <Ionicons name='chevron-back' size={24} color="#fff" />
                 </Pressable>
-                <Image style={{ flex: 1, width: '100%' }} source={{uri: `${HOST}${image}`}} resizeMode="cover" />
+                <Image style={{ flex: 1, width: '100%' }} source={{ uri: `${HOST}${image}` }} resizeMode="cover" />
             </View>
             <View style={styles.titleCard}>
                 <View style={styles.iconContainer}>

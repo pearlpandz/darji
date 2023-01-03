@@ -1,7 +1,11 @@
 import React from 'react'
 import { Text, View, StyleSheet, ScrollView, Dimensions, Image, Pressable } from 'react-native'
+import { useDispatch } from 'react-redux';
+import { updateOrder } from '../../../../redux/slices/order';
 import GET_A_QUOTE from './../../../../assets/images/getquote.png';
+
 function DesginByMyself({navigation}) {
+    const dispatch = useDispatch();
 
     const CATEGORIES = [{
         type: 'shirt',
@@ -25,6 +29,19 @@ function DesginByMyself({navigation}) {
         icon: require('./../../../../assets/icons/icon-9.png')
     }]
 
+    const handleRedirection = (type) => {
+        switch (type) {
+            case 'shirt':{
+                const payload = { orderType: type };
+                dispatch(updateOrder(payload));
+                navigation.navigate('Common',{screen: 'shirtCustomization'})
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
     return (
         <ScrollView>
             <View style={styles.banner}>
@@ -38,14 +55,7 @@ function DesginByMyself({navigation}) {
                         <Pressable 
                             style={[styles.cardContainer, styles.boxWithShadow]} 
                             key={index}
-                            onPress={() => {
-                                if(type === 'shirt') {
-                                    navigation.navigate('Common',{screen: 'shirtCustomization'})
-                                } else if(type === 'pant') {
-                                    navigation.navigate('Common',{screen: 'pantCustomization'})
-                                }
-                            }
-                        }>
+                            onPress={() => handleRedirection(type)}>
                             <Image source={image} style={styles.imageView} />
                             <View style={styles.contentContainer}>
                                 <View style={[styles.iconContainer, styles.boxWithShadow]}><Image source={icon} style={styles.iconView} /></View>

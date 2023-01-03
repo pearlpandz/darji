@@ -1,26 +1,25 @@
 import React, { useState, useMemo } from 'react'
 import { ScrollView, StyleSheet, Text, View, Image, FlatList, Pressable, Dimensions, TouchableOpacity, Alert, AlertIOS, ToastAndroid, } from 'react-native'
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Button from '../../../reusables/button'
 import Modal from 'react-native-modal';
 import ValidatePinCode from './validatePincode';
 import BottomBG from './../../../assets/images/bottom-bg-2.png';
 import Icon4 from './../../../assets/icons/icon-4.png';
 import Icon5 from './../../../assets/icons/icon-5.png';
-import axios from 'axios';
-import { HOST } from '../../../../env';
 import Address from './address';
+import { useDispatch } from 'react-redux';
+import { updateOrder } from '../../../redux/slices/order';
 
 function UploadReference({ orderData }) {
-    const { orderId, title, gender, designType } = orderData;
+    const dispatch = useDispatch();
     const navigation = useNavigation();
     const [imageList, setImageList] = useState([]);
     const [hasUploaded, setUploaded] = useState(false);
     const [actionSheet, setActionSheet] = useState(false);
     const [collectMeasureActionSheet, setMeasureActionSheet] = useState(false);
-    const [pin, setPin] = useState()
+    const [pin, setPin] = useState();
 
     const handleFileUpload = () => {
         // launchCamera({
@@ -53,19 +52,9 @@ function UploadReference({ orderData }) {
                 });
             }));
             const payload = { reference: imageList }
-            const url = `${HOST}/api/orderReferenceImage/${orderId}`;
-            console.log(url);
-            const { data } = await axios.post(url, formdata, {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            if (data) {
-                console.log(data);
-                setImageList([])
-                setUploaded(true)
-            }
+            dispatch(updateOrder(payload));
+            setImageList([])
+            setUploaded(true)
         } catch (error) {
             console.log(error);
             const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
@@ -82,15 +71,8 @@ function UploadReference({ orderData }) {
             const payload = {
                 measurementAddress: address
             };
-            const url = `${HOST}/api/updateOrder/${orderId}`;
-            const { data } = await axios.put(url, payload, { withCredentials: true });
-            if (data) {
-                console.log(data);
-                navigation.navigate('Common', {
-                    screen: 'clothcategory',
-                    params: { orderId }
-                })
-            }
+            dispatch(updateOrder(payload));
+            navigation.navigate('Common', { screen: 'clothcategory' });
         } catch (error) {
             console.log(error);
             const msg = Object.values(error.response.data).map(a => a.toString()).join(', ') || 'Something went wrong!';
@@ -193,12 +175,7 @@ function UploadReference({ orderData }) {
                                         if (!hasUploaded) {
                                             ToastAndroid.show("Upload Reference Images, then continue to submit measurements!", ToastAndroid.SHORT);
                                         } else {
-                                            navigation.navigate('Common', {
-                                                screen: 'measurement',
-                                                params: {
-                                                    orderId: orderId
-                                                }
-                                            })
+                                            navigation.navigate('Common', { screen: 'measurement' })
                                         }
                                     }}>
                                         <Text style={styles.link}>Submit Measurement Online Now</Text>

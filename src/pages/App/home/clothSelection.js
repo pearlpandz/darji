@@ -4,8 +4,7 @@ import { View, Text, ScrollView, StyleSheet, FlatList, Image, Alert, AlertIOS, P
 import ClothList from './clothListView';
 import { HOST } from '../../../../env';
 
-function ClothSelection({navigation, route}) {
-    const {orderId} = route.params;
+function ClothSelection({navigation}) {
     const [cloths, setCloths] = useState([])
 
     const getData = async () => {
@@ -13,6 +12,7 @@ function ClothSelection({navigation, route}) {
             const url = `${HOST}/api/cloths`;
             const { data } = await axios.get(url, {withCredentials: true})
             if(data) {
+                console.log(data);
                 setCloths(data)
             }
         } catch (error) {
@@ -34,7 +34,7 @@ function ClothSelection({navigation, route}) {
     return (
         <ScrollView>
             <View style={{paddingTop: 20}}>
-                <ClothList title="linen" orderId={orderId} navigation={navigation} cloths={cloths.filter(a=> a.material === 'linen')} />
+                <ClothList title="linen" navigation={navigation} cloths={cloths.filter(a=> a.material === 'linen')} />
             </View>
         </ScrollView>
     )

@@ -1,20 +1,23 @@
 import React, { useMemo, useState } from 'react'
 import { Text, View, StatusBar, SafeAreaView, StyleSheet, Image, FlatList, Dimensions, TouchableOpacity, ScrollView, TextInput, Pressable } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useDispatch } from 'react-redux';
+import { updateOrder } from '../../../../../redux/slices/order';
 import Button from '../../../../../reusables/button';
 import MyShirt from '../../../../../reusables/customization/myshirt';
 import CollorOptions from './collorOptions';
 import { CUSTOMIZE_OPTIONS, COLLORS, POCKETS, SLEEVES, CUFFS, BACKS, STAMPS, CUFFS_TYPE } from './constant';
 
 function ShirtCustomization({ routes, navigation }) {
+  const dispatch = useDispatch();
   const [config, setConfig] = useState({
-    collor: 'prince charlie',
-    pocket: 'single pocket',
-    sleeve: 'full hand',
-    cuff: 'single button',
-    cuffStyle: 'inner style',
-    back: 'no pleats',
-    stamp: 'collar'
+    collor: '',
+    pocket: '',
+    sleeve: '',
+    cuff: '',
+    cuffStyle: '',
+    back: '',
+    stamp: ''
   });
   const [selectedIndex, setSelection] = useState(0);
   const [isDone, setDone] = useState(false);
@@ -74,6 +77,21 @@ function ShirtCustomization({ routes, navigation }) {
     return values.every(a => a);
   }
 
+  const saveCustomization = () => {
+    if(isDone) {
+      const payload = {
+        orderedDesign: {
+          ...config,
+          notes: note
+        }
+      };
+      dispatch(updateOrder(payload));
+      navigation.navigate('selectMeasurement');
+    } else {
+      setDone(true)
+    }
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, backgroundColor: '#87BCBF' }}>
       <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={false}>
@@ -128,7 +146,7 @@ function ShirtCustomization({ routes, navigation }) {
             }
           </View>
           <View style={{ marginTop: 20 }}>
-            <Button type={isValid() ? 'primary' : 'disabled'} label='save & next' disabled={!isValid()} onPress={() => setDone(true)} />
+            <Button type={isValid() ? 'primary' : 'disabled'} label='save & next' disabled={!isValid()} onPress={() => saveCustomization()} />
           </View>
         </View>
       </ScrollView>

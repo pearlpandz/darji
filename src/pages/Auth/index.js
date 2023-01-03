@@ -1,12 +1,10 @@
 import React, {useMemo, useEffect} from 'react';
-
 import {
   SafeAreaView,
   View,
   StyleSheet,
   StatusBar,
   Image} from 'react-native';
-import Navigation from '../../reusables/navigation';
 import TabPageView from './tab';
 import Background from './../../assets/images/background.png'
 import Logo from './../../assets/logo.png'

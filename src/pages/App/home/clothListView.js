@@ -1,14 +1,14 @@
 import React from 'react'
 import { View, Text, ScrollView, StyleSheet, FlatList, Image, Pressable } from 'react-native';
 import ClothCard from './clothCardView';
-function ClothList({ navigation, title, cloths, orderId }) {
+function ClothList({ navigation, title, cloths }) {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{title}</Text>
             <FlatList
                 data={cloths}
                 renderItem={({ item }) => {
-                    return <Pressable onPress={() => navigation.navigate('clothdetail', {...item, orderId})}>
+                    return <Pressable onPress={() => navigation.navigate('clothdetail', {...item})}>
                         <ClothCard item={item} key={item.index} />
                     </Pressable>
                 }}

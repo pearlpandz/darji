@@ -47,6 +47,9 @@ import ReturnPage from './src/pages/App/return';
 import AVATAR from './src/assets/images/avatar.png';
 import LOGO from './src/assets/logo-1.png';
 import { NetworkCheck } from './src/HOC/network';
+import store from './src/redux/store';
+import { Provider } from 'react-redux';
+import SelectMeasurement from './src/pages/App/home/selectMeasurement';
 
 const Drawer = createDrawerNavigator();
 const DrawerScreen = () => {
@@ -434,6 +437,15 @@ const HomeStackScreen = () => {
       },
     })}
     />
+    <HomeStack.Screen name="selectMeasurement" component={SelectMeasurement} options={() => ({
+      title: "Select Measurement",
+      headerShown: true,
+      headerTitleStyle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
+    })}
+    />
   </HomeStack.Navigator>)
 };
 
@@ -586,25 +598,27 @@ const App = () => {
   }, []);
 
   return (
-    <WelcomeContext.Provider value={{ isWelcomed, setWelcome }}>
-      <AuthContext.Provider value={{ isAuthenticated, setAuthStatus }}>
-        <NetworkContext.Provider value={{ isOnline, setNetworkStatus }}>
-          <CurrentUserContext.Provider value={{ session, setSession }}>
-            <NavigationContainer>
-              <StatusBar style="auto" />
-              {
-                isCheckedAsyncStorage ?
-                  <RootStackScreen
-                    isAuthenticated={isAuthenticated}
-                    isWelcomed={isWelcomed}
-                  /> :
-                  null
-              }
-            </NavigationContainer>
-          </CurrentUserContext.Provider>
-        </NetworkContext.Provider>
-      </AuthContext.Provider>
-    </WelcomeContext.Provider>
+    <Provider store={store}>
+      <WelcomeContext.Provider value={{ isWelcomed, setWelcome }}>
+        <AuthContext.Provider value={{ isAuthenticated, setAuthStatus }}>
+          <NetworkContext.Provider value={{ isOnline, setNetworkStatus }}>
+            <CurrentUserContext.Provider value={{ session, setSession }}>
+              <NavigationContainer>
+                <StatusBar style="auto" />
+                {
+                  isCheckedAsyncStorage ?
+                    <RootStackScreen
+                      isAuthenticated={isAuthenticated}
+                      isWelcomed={isWelcomed}
+                    /> :
+                    null
+                }
+              </NavigationContainer>
+            </CurrentUserContext.Provider>
+          </NetworkContext.Provider>
+        </AuthContext.Provider>
+      </WelcomeContext.Provider>
+    </Provider>
   )
 };
 
